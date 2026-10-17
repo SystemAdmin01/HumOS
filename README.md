@@ -44,6 +44,8 @@ Questo repository contiene l'intera architettura operativa:
 * 💻 **[Capitolo 5: LINGHOS](docs/05_LINGHOS_SINTASSI.md)** — La sintassi a riga di comando per isolare i bug mentali e forzare il *Force Quit*.
 * 📑 **[Documento Unico Completo](docs/HUMOS_DOCUMENTAZIONE_UFFICIALE.md)** — Il testo integrale esportabile pronto per la lettura continuativa o Notion.
 
+> 👉 Per consultare l'architettura tecnica completa, i livelli e i comandi LINGHOS, leggi il **[Manuale Ufficiale](Main.md)**.
+
 ---
 
 ## 📜 Licenza e Diritti d'Autore
