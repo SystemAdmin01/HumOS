@@ -405,7 +405,12 @@ Il SysAdmin opera come un'agenzia di intelligence: **entra nel Silenzio Operativ
 ### 6.5 Fase 5: ESCALATE (Escalation Condizionale e Poison Skills)
 L'escalation non è un atto di rabbia: è una procedura di sicurezza estrema governata da una clausola condizionale binaria:
 
-$$\text{IF } (\text{CS\_EXPOSED} == \text{TRUE}) \implies \text{EXECUTE } \text{Poison\_Skills}$$
+IF(CS_UNLOCKED){
+
+	Call>> (Poison_skills){ 		//Gruppo di skills allenate a colpire e sovrastare verbalmente ogni tipo di attacco nell’immediato con qualunque sistema.
+							// utile in tradimenti, prese di mira pubbliche o tutte quelle situazioni dove sei scoperto
+
+	all_instruments(attack)
 
 Se la minaccia, non contenta del distacco, tenta di forzare il caveau, mettere alle strette il SysAdmin o violare pubblicamente il suo Codice Sorgente, il sistema effettua la **Chiamata alle Armi**.  
 Attraverso la funzione `Poison_Skills`, il SysAdmin apre il dossier compilato dallo Sniffer e colpisce con precisione chirurgica le falle strutturali della personalità dell'avversario. Un solo colpo logico, inconfutabile, formulato per porre fine alla partita in via definitiva.  
