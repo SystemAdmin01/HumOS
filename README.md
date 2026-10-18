@@ -46,7 +46,7 @@ Questo repository contiene l'intera architettura operativa:
 
 > 👉 Per consultare l'architettura tecnica completa, i livelli e i comandi LINGHOS, leggi il **[Manuale Ufficiale](Main.md)**.
 
----
+--- **>Se trovi utile questo Framework lascia una stella per sostenere il progetto e farlo conoscere agli altri!** 
 
 ## 📜 Licenza e Diritti d'Autore
 
