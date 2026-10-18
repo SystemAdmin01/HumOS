@@ -1,7 +1,9 @@
 # HumOS (Human Operating System): Manuale di Architettura Integrale
 ### Framework Cibernetico di Riconfigurazione Cognitiva, Autodeterminazione e Incident Response per Menti Neurodivergenti e Iper-Logiche
 
-> *"Il cervello è il mezzo. HumOS è il binario."*
+> *"Il cervello è il mezzo. HumOS è il binario."
+HumOS non è una teoria per cambiare te stesso o gli altri.
+È una cassetta degli attrezzi di emergenza per quando l'ambiente esterno diventa un casino insopportabile e tu devi continuare a funzionare.*
 
 ---
 
