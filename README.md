@@ -3,7 +3,10 @@ HumOS — The Cognitive Management Framework for ADHD.
 
 # ⚡ HumOS: Human Operating System
 
-> **"Il cervello è il mezzo. HumOS è il binario."**
+> **"Il cervello è il mezzo. HumOS è il binario.
+gli stanco della psicologia classica? 
+gli altri non capiscono il tuo linguaggio? 
+HumOS fa al caso tuo. "**
 
 Hai presente quando hai 47 schede aperte nel cervello, musica a palla in sottofondo e ti ritrovi paralizzato davanti a un compito da due minuti?  
 Ti hanno sempre convinto di essere pigro, disorganizzato o sbagliato.
