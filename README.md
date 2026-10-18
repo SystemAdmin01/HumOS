@@ -84,7 +84,7 @@ HumOS è un progetto **pubblico e aperto**, creato per restituire lucidità e so
 2. 🚫 **Divieto Commerciale Assoluto (Non-Commercial):** È **severamente vietato** qualsiasi utilizzo dell'opera a fini di lucro: corsi a pagamento, consulenze, monetizzazione diretta o inclusione in prodotti commerciali senza esplicito consenso scritto dell'autore.
 
 *(Licenza di riferimento: Creative Commons CC BY-NC 4.0)*
- copyright (c) 2026 Diego /SystemArchitet01
+ MIT Copyright (c) 2026 Diego /SystemAdmin01
 ---
 
 ## 🚀 Prendi i Comandi
