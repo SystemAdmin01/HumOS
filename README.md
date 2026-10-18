@@ -54,6 +54,23 @@ Questo repository contiene l'intera architettura operativa:
 * 💻 **[Capitolo 5: LINGHOS](docs/05_LINGHOS_SINTASSI.md)** — La sintassi a riga di comando per isolare i bug mentali e forzare il *Force Quit*.
 * 📑 **[Documento Unico Completo](docs/HUMOS_DOCUMENTAZIONE_UFFICIALE.md)** — Il testo integrale esportabile pronto per la lettura continuativa o Notion.
 
+## ⚡ Manifesto & Filosofia Architetturale
+
+La psicologia tradizionale e i modelli convenzionali ripetono da sempre lo stesso dogma: *"Devi adattarti. Devi modificare la tua sintassi per conformarti ad ambienti pensati per altre architetture."*
+
+**HumOS rifiuta questo approccio.**
+
+Tentare di far girare un cervello ad alto carico cognitivo e analitico su parametri pensati per sistemi a basso rendimento causa unicamente tre cose: *latency*, *masking* forzato e *system crash* (burnout).
+
+### I Principi del Kernel:
+
+1. **Nessun Adattamento Legacy:** Non modifichiamo il nostro codice per adeguarci a protocolli sociali inefficienti o manipolatori.
+2. **Definizione dello Standard:** HumOS non cerca empatia o approvazione; fornisce l'interfaccia, il Firewall e i binari d'esecuzione affinché l'esterno debba interfacciarsi con la nostra sintassi logica.
+3. **Sovranità Cognitiva (Zero-Trust):** Il Kernel appartiene al SysAdmin. Ogni input esterno (provocazione, gaslighting, sovraccarico sensoriale/emotivo) è trattato come un pacchetto dati non verificato finché non supera il filtro di Sandbox.
+
+> *"Non adattare il tuo codice a un ambiente inadeguato. Costruisci il framework che costringe l'ambiente a rispettare la tua architettura."*
+
+
 > 👉 Per consultare l'architettura tecnica completa, i livelli e i comandi LINGHOS, leggi il **[Manuale Ufficiale](Main.md)**.
 
 --- **>Se trovi utile questo Framework lascia una stella per sostenere il progetto e farlo conoscere agli altri!** 
@@ -67,7 +84,7 @@ HumOS è un progetto **pubblico e aperto**, creato per restituire lucidità e so
 2. 🚫 **Divieto Commerciale Assoluto (Non-Commercial):** È **severamente vietato** qualsiasi utilizzo dell'opera a fini di lucro: corsi a pagamento, consulenze, monetizzazione diretta o inclusione in prodotti commerciali senza esplicito consenso scritto dell'autore.
 
 *(Licenza di riferimento: Creative Commons CC BY-NC 4.0)*
-
+ copyright (c) 2026 Diego /SystemArchitet01
 ---
 
 ## 🚀 Prendi i Comandi
