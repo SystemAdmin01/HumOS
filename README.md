@@ -10,6 +10,12 @@ Stanco della psicologia classica? Gli altri decodificano male il tuo linguaggio?
 
 HumOS è un framework di ingegneria cognitiva e difesa tattica ad architettura Zero-Trust, progettato per menti analitiche, neurodivergenti e contesti ad altissima pressione. 
 
+HumOS non è una teoria per cambiare te stesso o gli altri.
+È una cassetta degli attrezzi di emergenza per quando l'ambiente esterno diventa un casino insopportabile e tu devi continuare a funzionare.
+
+
+
+
 ---
 
 
