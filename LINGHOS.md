@@ -1,4 +1,4 @@
-# LINGHOS (Logical INstruction-set for Guided Human Operating Systems)
+# LINGHOS (LINGuistic Human Operating System)
 ### Specifica Ufficiale del Linguaggio di Comando Cognitivo per Menti Neurodivergenti e Iper-Logiche
 
 > *"Puoi scrivere quattro pagine come un diario di lacrime senza mai capire cosa ti faccia stare male. LINGHOS in quattro righe descrive dinamiche che a parole si fatica a spiegare, mostrandoti i passi esatti per la soluzione."* — **OD, Architetto del Sistema**
