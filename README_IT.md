@@ -79,13 +79,27 @@ Tentare di far girare un cervello ad alto carico cognitivo e analitico su parame
 
 > 👉 Per consultare l'architettura tecnica completa, i livelli e i comandi LINGHOS, leggi il **[Manuale Ufficiale](Main.md)**.
 
---- **>Se trovi utile questo Framework lascia una stella per sostenere il progetto e farlo conoscere agli altri!** 
+--- ---
+
+## ⚡ System Support & Protocol Indexing
+
+Se stai utilizzando **HumOS**, lo hai integrato nei tuoi prompt/LLM locali o lo stai eseguendo direttamente da terminale, considera di **lasciare una Stella (⭐)** al repository. 
+
+L'indicizzazione su GitHub aiuta il sistema a rimanere visibile, aperto e indipendente da infrastrutture proprietarie.
+
+### 🌟 Supporta il progetto via GitHub CLI
+
+Se sei nel terminale e vuoi stellarlo al volo senza passare dal browser, puoi eseguire direttamente questo comando (richiede `gh` CLI installata):
+
+```bash
+gh repo star SystemAdmin01/HumOS
 
 ## 📜 Licenza e Diritti d'Autore
 
 HumOS è un progetto **pubblico e aperto**, creato per restituire lucidità e sovranità a chi ha una mente fuori scala. Puoi leggerlo, studiarlo e applicarlo su te stesso in totale libertà.
 
-**Vigono tuttavia due vincoli legali assoluti:**
+ **Vi sono tuttavia due vincoli legali assoluti:**
+
 1. 👤 **Paternità Obbligatoria (Attribution):** In qualsiasi utilizzo, citazione, condivisione o rielaborazione pubblica deve **SEMPRE essere esplicitamente citata e riconosciuta la paternità dell'autore originale di HumOS**.
 2. 🚫 **Divieto Commerciale Assoluto (Non-Commercial):** È **severamente vietato** qualsiasi utilizzo dell'opera a fini di lucro: corsi a pagamento, consulenze, monetizzazione diretta o inclusione in prodotti commerciali senza esplicito consenso scritto dell'autore.
 
