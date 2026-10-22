@@ -91,7 +91,8 @@ L'indicizzazione su GitHub aiuta il sistema a rimanere visibile, aperto e indipe
 
 Se sei nel terminale e vuoi stellarlo al volo senza passare dal browser, puoi eseguire direttamente questo comando (richiede `gh` CLI installata):
 
-**gh repo star SystemAdmin01/HumOS**
+```bash
+gh repo star SystemAdmin01/HumOS
 
 
 
