@@ -13,18 +13,20 @@
 
 ## 🌐 Selezione Lingua / Language Select
 
-Seleziona il file principale in base alla lingua di preferenza:
-* 🇮🇹 **[Documentazione in Italiano](README_IT.md)**
-* 🇬🇧 **[English Documentation](README_ENG.md)**
+Accedi all'area di sistema dedicata in base alla lingua di preferenza:
+* 🇮🇹 **[Entra nell'Area Italiana](./ITA/)**
+* 🇬🇧 **[Enter English Area](./ENG/)**
 
 ---
 
-## 📌 Indice dei Componenti / Component Index
+## 📌 Indice delle Aree di Sistema / System Areas
 
-| Modulo di Sistema / System Module | 🇮🇹 Italiano | 🇬🇧 English |
+| Area Linguistica | Directory di Sistema | Descrizione |
 | :--- | :--- | :--- |
-| **Core Framework** | [HumOS-Framework (ITA)](HumOS-Framework_ITA.md) | [HumOS-Framework (ENG)](HumOS-Framework_ENG.md) |
-| **Sintassi `Lghos`** | [Specifiche LINGHOS (ITA)](LINGHOS_IT.md) | [LINGHOS Specifications (ENG)](LINGHOS_ENG.md) |
+| 🇮🇹 **Italiano** | [📁 Vai a /it/](./ITA/) | Contiene il framework, la sintassi `Lghos` e la documentazione in italiano. |
+| 🇬🇧 **English** | [📁 Go to /en/](./ENG/) | Contains the framework, `Lghos` syntax and documentation in English. |
+
+---
 
 ## ⚡ Aggiornamenti e Patch / Updates
 
