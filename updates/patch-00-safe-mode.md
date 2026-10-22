@@ -82,5 +82,24 @@ Quando senti che l'energia è tornata:
 
 ---
 
+## 6. Fondamenta Scientifiche e Psicologiche (Validazione del Modello)
+
+La **Safe Mode Offline** non è un'invenzione teorica isolata, ma un protocollo pratico basato su principi ampiamente dimostrati dalle neuroscienze cognitive e dalla psicologia dell'attenzione:
+
+### A. Teoria del Carico Cognitivo (Cognitive Load Theory - Sweller)
+La nostra memoria di lavoro (*working memory*) ha una capacità limitata. L'esposizione continua a micro-stimoli digitali crea un **carico cognitivo estraneo** (*extraneous load*) che satura le risorse disponibili. Disconnettersi temporaneamente riduce questo carico a zero, consentendo al cervello di riallocare le energie sulle funzioni essecutive principali.
+
+### B. Default Mode Network (DMN) e Lavoro Subconscio
+Quando interrompi l'acquisizione di dati ad alta frequenza e ti dedichi ad attività analogiche a basso stimolo, si attiva la **Default Mode Network** (la rete neurale dello stato di riposo). È in questo stato che il cervello consolida le informazioni, risolve problemi complessi "in background" e genera connessioni creative spontanee.
+
+### C. Teoria del Ripristino dell'Attenzione (Attention Restoration Theory - Kaplan)
+Gli schermi e le notifiche richiedono un'**attenzione diretta** costante, un meccanismo fisiologicamente soggetto a fatica. L'ambiente analogico o naturale attiva invece l'**attenzione involontaria** (*fascinazione soft*), consentendo ai meccanismi di concentrazione diretta di riposare e rigenerarsi completamente.
+
+### D. Ricalibrazione della Sensibilità Dopaminergica
+L'uso compulsivo dei dispositivi causa una tolleranza agli stimoli veloci. Riducendo temporaneamente l'input visivo e informativo, la soglia di attivazione neurale si abbassa: attività che prima ti sembravano noiose (studiare, scrivere, produrre, pensare) tornano a essere percepite come stimolanti e desiderabili.
+
+
+---
+
 > **NOTA DI SISTEMA:**
 > Questo protocollo non è una punizione e non richiede rinunce eroiche. È semplicemente uno strumento per ridare spazio alla tua testa quando si riempie troppo. Scatena la noia buona, azzera il rumore e lascia che la voglia di fare torni da sola.
