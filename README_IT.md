@@ -93,7 +93,7 @@ Se sei nel terminale e vuoi stellarlo al volo senza passare dal browser, puoi es
 
 ```bash
 gh repo star SystemAdmin01/HumOS
-
+```
 
 
 ## 📜 Licenza e Diritti d'Autore
