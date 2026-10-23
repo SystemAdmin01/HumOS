@@ -1,0 +1,54 @@
+==============================================================================
+HumOS License Agreement - Non-Commercial Use Only
+==============================================================================
+
+HumOS is licensed under the Creative Commons Attribution-NonCommercial 4.0 
+International License (CC BY-NC 4.0).
+
+This license applies to all assets contained in this repository, including 
+but not limited to:
+- CODE & EXECUTABLE SYNTAX (e.g., Lghos routines, scripts, LLM prompts)
+- DOCUMENTATION & FRAMEWORK SPECIFICATIONS (e.g., READMEs, core theory, architecture docs)
+
+==============================================================================
+CREATIVE COMMONS ATTRIBUTION-NONCOMMERCIAL 4.0 INTERNATIONAL (CC BY-NC 4.0)
+==============================================================================
+
+Copyright (c) 2026 SystemAdmin01
+
+To view a copy of this license, visit:
+http://creativecommons.org/licenses/by-nc/4.0/
+
+You are free to:
+- Share: Copy and redistribute the material in any medium or format.
+- Adapt: Remix, transform, and build upon the material.
+
+Under the following terms:
+
+- Attribution (BY): You must give appropriate credit to SystemAdmin01, 
+  provide a link to the license, and indicate if changes were made. You may 
+  do so in any reasonable manner, but not in any way that suggests the 
+  licensor endorses you or your use.
+
+- NonCommercial (NC): YOU MAY NOT USE THE MATERIAL FOR COMMERCIAL PURPOSES. 
+  This includes selling the software, bundling it into paid products, 
+  using it for paid consulting, or monetizing the framework in any form.
+
+- No additional restrictions: You may not apply legal terms or 
+  technological measures that legally restrict others from doing 
+  anything the license permits.
+
+==============================================================================
+DISCLAIMER OF WARRANTY ("AS IS")
+==============================================================================
+
+THE SOFTWARE AND DOCUMENTATION ARE PROVIDED "AS IS", WITHOUT WARRANTY OF 
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES 
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+
+IN NO EVENT SHALL SYSTEMADMIN01 OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE 
+USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
