@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 HumOS (Human Operating System)
+#  HumOS (Human Operating System)
 > *An extreme, engineering-based mental martial arts framework and cognitive operating system.*
 
 [![Status](https://img.shields.io/badge/system-active-success.svg)]() [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
