@@ -1,0 +1,61 @@
+// ============================================================
+// PATCH: GAP-001 — G.A.P. Protocol
+// Gestione Attiva delle Paranoie
+// HumOS Framework | LINGHOS v2.1
+// CHIAMATA: Call >> G.A.P.protocol;
+// ============================================================
+
+#include <Defense_Mode>
+#include <Executive_Control>
+#include <Assoc_Engine>
+#include <para.md>
+#include <Lghos.command>
+
+#define para    = import > para.md
+#define X       = CallTo > para
+#define TIMEOUT = [30]
+
+Main() {
+
+    // FASE 1: RILEVAMENTO — i RADAR intercettano X
+    When(analyst AND sniffer) {
+        RELEVE(X);
+        SET_FLAG(X, UNCLASSIFIED);
+    }
+
+    // FASE 2: RICONOSCIMENTO BUG + INTERRUPT LOOP
+    CPUauto {
+        Get:: X;
+        IF (Assoc_Engine.status == LOOP) {
+            BREAK_LOOP(X);
+            Call >> Drop_All_Background_Threads;
+            Call >> RAM_Diagnostic;
+        }
+    }
+
+    // FASE 3: ACCETTAZIONE INCONDIZIONATA
+    SET_VALUE(X, UNDEFINED);
+
+    // FASE 4: SANDBOXING DI X
+    @Start>(PRS_VM) {
+        priority = HP;
+        ON> X;
+        SET_CriticVal >> X = [3];
+    }
+
+    // FASE 5: PROTEZIONE DEL CORE
+    IF (CS_EXPOSED) {
+        Call >> Ice_shield;
+        Call >> Double_Bottom_Shield;
+        OVR >> (DDS, ADS);
+    }
+
+    // FASE 6: REINDIRIZZO MOTORI RADAR
+    Call >> analyst;
+    Call >> sniffer(IN&OUT_resources);
+
+    // FASE 7: RESTITUZIONE CONTROLLATA
+    RETURN(X, UNDEFINED);
+
+    <<@end
+}

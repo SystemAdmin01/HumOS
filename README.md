@@ -5,23 +5,31 @@
 ### *Your brain runs on an OS. HumOS gives you root access.*
 
 **An engineering-based cognitive framework for ADHD, neurodivergence, and overthinkers.**  
-*Turn mental chaos into structured clarity — using the same logic as a computer.*
+*Transform mental friction into structured cybernetic clarity — using computer architecture logic.*
 
 ---
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.txt)
-[![Language](https://img.shields.io/badge/language-LINGHOS%20%7C%20Python-cyan.svg)]()
-[![Framework](https://img.shields.io/badge/framework-HumOS%20v2.1-purple.svg)]()
-[![Status](https://img.shields.io/badge/status-Active%20Development-green.svg)]()
-[![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
+[![Language: LINGHOS | Python](https://img.shields.io/badge/Language-LINGHOS%20%7C%20Python%203.11+-cyan.svg)]()
+[![Architecture: Cognitive OS](https://img.shields.io/badge/Architecture-Cognitive%20OS%20v2.1-purple.svg)]()
+[![Status: Production Ready](https://img.shields.io/badge/Status-Active%20Development-success.svg)]()
+[![Platform: macOS / Cross-platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Web-lightgrey.svg)]()
+
+---
+
+[🇮🇹 Documentazione Italiana](./docs/it/README.md) • [🇬🇧 English Documentation](./docs/en/README.md) • [🛡️ Cockpit Web UI](#-interactive-cockpit--visual-compiler) • [🩹 Protocols](./protocols/en/)
 
 </div>
 
 ---
 
+<p align="center">
+  <img src="assets/humos_cockpit_preview.png" alt="HumOS Cockpit Preview" width="880"/>
+</p>
+
 <div align="center">
 
-> **"Your mind is not broken. It just needs a better operating system."**
+> *"Your mind is not broken. It just lacks an explicit operating system."*
 
 </div>
 
@@ -29,221 +37,163 @@
 
 ## 🖥️ What is HumOS?
 
-HumOS is a **cognitive operating system** — a framework that maps the human mind  
-to computer architecture concepts:
+**HumOS** bridges cognitive psychology, ADHD management, and operating system principles. Instead of ambiguous emotional journaling, HumOS maps neurodivergent cognitive states directly to computer architecture:
 
-| Human Mind | HumOS Concept |
-|-----------|---------------|
-| Working memory | **RAM** |
-| Anxiety / stress loops | **CPU overload / infinite loop** |
-| Emotional triggers | **Threat variables** |
-| Self-regulation tools | **Defense skills** |
-| Rumination | **Background thread leak** |
-| Emotional boundaries | **Firewall / Sandbox** |
-| Focus mode | **Atomic task execution** |
-| Panic / overwhelm | **Thermal throttling** |
-
-You write **LINGHOS code** to describe your mental state — and the system  
-gives you back a **visual threat map, telemetry, and an operational solution**.
+| Human Cognitive State | HumOS Cybernetic Mapping | Engine Role |
+| :--- | :--- | :--- |
+| **Working Memory** | **RAM Memory Pool** | Monitored to avoid cognitive leaks and thrashing |
+| **Anxiety / Rumination** | **CPU-Loop / Infinite Execution** | High-cycle drain stopped via interrupt triggers |
+| **Interpersonal Threats** | **Threat Targets with Weight & Criticality** | Positioned dynamically in visual proximity arena |
+| **Self-Regulation Skills** | **Defense Shields (Ice Shield, Double-Bottom)** | Firewalls separating raw data from emotional charge |
+| **Emotional Boundaries** | **Sandbox Virtual Machines (PRS_VM, EXT_VM)** | Isolates volatile variables from the core identity |
+| **Core Vulnerability** | **CS (Core Self) State [SECURE, EXPOSED, UNLOCKED]** | Protected kernel status regulating defensive posture |
+| **Sensory / Panic Overwhelm** | **Thermal Throttling & Biofeedback Clamps** | Heart-rate dampening and physiological resets |
 
 ---
 
-## ⚡ LINGHOS — The Language of the Mind
+## ⚡ LINGHOS — The Cybernetic Language of the Mind
 
-**LINGHOS** is the DSL (Domain Specific Language) of HumOS.  
-It compiles your cognitive state into actionable defense strategies.
+**LINGHOS** is the domain-specific language (DSL) powering HumOS. Write readable architectural code to diagnose, isolate, and defend your mental state:
 
 ```linghos
-// Situation: someone toxic is draining your resources
-
+// INCIDENT: Toxic variable attempting emotional drain
 #include <Defense_Mode>
 
-Get: Marco(mrk)[8], Sara(sara)[5];
-Set_CriticVal >> mrk = [9]
+Get: HostileTarget(htg)[8], ChaoticEvent(evt)[6];
+Set_CriticVal >> htg = [9]
 
 Main() {
+    // 1. Isolate threats into high-priority sandboxes
     @Start>(HP_EXT_Defense_VM) {
-        ON> mrk, sara;
+        ON> htg, evt;
     }
 
+    // 2. Intercept loop & engage cryogenic shields if core exposed
     IF(CS_EXPOSED) {
         Call >> Ice_shield;
         Call >> Double_Bottom_Shield;
         OVR >> (DDS, ADS);
     }
 
+    // 3. Complete emotional lockdown: sever bridges & fidelity
     /SET_Lockdown_Mode {
-        Take_DOWN(all) > (mrk)'s_Core
-        Close(all) > (mrk)'s_bridges
+        Take_DOWN(all) > (htg)'s_Core
+        Close(all) > (htg)'s_bridges
     }
 
     <<@end
 }
 ```
 
-**Output:** the system renders a live visual arena showing threat proximity to your Core,  
-activates defense shields between you and the threats, and generates telemetry  
-(RAM %, BPM, CS state, thermal status).
+The HumOS compiler parses the code, evaluates thermodynamic telemetry, calculates threat orbits, and outputs immediate, structured mitigation steps.
 
 ---
 
-## 🚀 Quick Start
+## 🛡️ Interactive Cockpit & Visual Compiler
 
-### Option 1 — Run the App (macOS, one click)
+The **HumOS Cockpit** (`src/linghos/cockpit.html`) is a standalone cybernetic console running locally in your browser:
 
-1. Download the latest release: [**HumOS.app.zip**](https://github.com/SystemAdmin01/HumOS/releases)
-2. Extract → double-click **HumOS.app**
-3. The browser opens at `http://127.0.0.1:8080` — the **Cockpit** is live.
+* 🎯 **Dynamic Threat Proximity Radar**: Renders real-time orbits where threat distance is directly determined by emotional weight $[1..10]$ and criticality $[1..10]$.
+* 🛡️ **Active Defense Shields**: Visual representation of deployed shields (`Ice Shield`, `Double-Bottom`, `Lockdown`) buffering the Core.
+* 🖱️ **Drag-and-Drop Defense Palette**: Drag shields directly onto the arena to synthesize LINGHOS code automatically.
+* 📡 **Live Thermodynamic Telemetry**: Real-time meters for **RAM %**, **BPM Heart Rate**, **Core Self (CS) State**, and **Thermal Throttling Alert**.
+* 🤖 **Autonomous Symbol Registry**: Dynamically discovers and learns custom skills and macro definitions on the fly.
+* 📖 **Built-in Interactive Command Manual**: Full clickable reference for all language constructs.
 
-> If macOS shows a security warning: **Right-click → Open → Open anyway**  
-> (only needed the first time)
+---
 
-### Option 2 — Run from source
+## 🚀 Quick Start (Instant Launch)
 
+### 🍎 Option 1 — macOS One-Click App (Recommended)
+1. Download [**HumOS.app.zip**](https://github.com/SystemAdmin01/HumOS/releases) from Releases.
+2. Unzip and double-click **`HumOS.app`**.
+3. Your browser automatically opens at `http://127.0.0.1:8080`.
+
+*(First-time macOS notice: Right-click `HumOS.app` → **Open**).*
+
+### 💻 Option 2 — Run from Source (Universal)
 ```bash
+# Clone the repository
 git clone https://github.com/SystemAdmin01/HumOS.git
-cd HumOS
-chmod +x HumOS_Cockpit.command
-./HumOS_Cockpit.command
-```
+cd HumOS/src
 
-Requires Python 3.11+. No other dependencies.
+# Launch the visual cockpit
+python3 app.py
+```
+*Zero external dependencies required. Pure Python 3 standard library + vanilla web standards.*
 
 ---
 
-## 🗂️ Repository Structure
+## 📁 Repository Architecture
 
-```
+The codebase follows enterprise repository standards:
+
+```text
 HumOS/
+├── assets/                     # Media, high-resolution screenshots & UI previews
+│   └── humos_cockpit_preview.png
 │
-├── README.md                   ← You are here
-├── LICENSE.txt
+├── docs/                       # Comprehensive documentation
+│   ├── it/                     # 🇮🇹 Italian manual & full LINGHOS reference
+│   └── en/                     # 🇬🇧 English manual & complete framework guide
 │
-├── /ITA/                        ← 🇮🇹 Italian System Area
-│   ├── LINGHOS.md              — Full language reference (IT)
-│   ├── HUMOS_DOC.md            — Framework documentation (IT)
-│   └── protocols/              — LINGHOS protocols (IT)
+├── examples/                   # Executable LINGHOS scripts & scenarios
+│   ├── adhd_ram_flush.lgh      # Instant cognitive memory purger
+│   ├── incident_01.lgh         # Complete perimeter defense sample
+│   ├── GAP-001_paranoia.lgh    # Chaotic loop interrupt implementation
+│   └── demo_pythonic.py        # Python SDK integration demonstration
 │
-├── /ENG/                        ← 🇬🇧 English System Area
-│   ├── LINGHOS_EN.md           — Full language reference (EN)
-│   ├── HUMOS_DOC_EN.md         — Framework documentation (EN)
-│   └── protocols/              — LINGHOS protocols (EN)
-│       └── GAP-001_complete_EN.md  ← Active Paranoia Management patch
+├── protocols/                  # Tactical cognitive intervention protocols
+│   ├── it/                     # Italian protocol specifications (G.A.P., Safe Mode)
+│   └── en/                     # English protocol specifications
 │
-├── /updates/                   ← 🩹 System Patches & Updates
-│   ├── PATCH_00_SAFE_MODE.md   — Safe Mode Offline protocol
-│   └── GAP-001_gap_protocol.md — G.A.P. Protocol patch notes
+├── src/                        # Core Python Engine & Interactive Cockpit
+│   ├── app.py                  # Server entrypoint
+│   ├── HumOS_Cockpit.command   # Native macOS executable launcher script
+│   ├── pyproject.toml          # Modern packaging configuration
+│   └── linghos/                # Core language compiler package
+│       ├── compiler.py         # Lexer, AST evaluator & symbol learner
+│       ├── kernel.py           # Cognitive OS runtime state manager
+│       ├── models.py           # Domain dataclasses & telemetry structures
+│       ├── parser.py           # LINGHOS grammar engine
+│       ├── web.py              # Low-latency local HTTP & REST API server
+│       └── cockpit.html        # Interactive visual frontend application
 │
-├── /src/                       ← 🐍 Python Compiler & Cockpit
-│   ├── app.py                  — Entry point (run this)
-│   ├── linghos/
-│   │   ├── compiler.py         — LINGHOS compiler & symbol registry
-│   │   ├── parser.py           — Lexer & AST parser
-│   │   ├── kernel.py           — HumOS runtime kernel
-│   │   ├── models.py           — Data models (Target, Shield, VM…)
-│   │   ├── web.py              — HTTP server & REST API
-│   │   └── cockpit.html        — Interactive Cockpit UI
-│   └── HumOS_Cockpit.command   — macOS launcher (double-click)
+├── updates/                    # Version changelogs and system patches
+│   ├── Patch00-ITA.md
+│   └── Patch00-ENG.md
 │
-└── /examples/                  ← 📋 Example LINGHOS scripts
+├── LICENSE.txt                 # MIT Open Source License
+└── README.md                   # Repository landing page
 ```
 
 ---
 
-## 🛡️ The Cockpit — Interactive Visual Compiler
+## 🩹 Standard Protocols Catalog
 
-<p align="center">
-  <img src="ED71A99B-1E11-4043-BCCF-796DD6B3237E.png" alt="HumOS Cockpit Preview" width="850"/>
-</p>
-
-The HumOS Cockpit is a **browser-based visual compiler** that:
-
-- 🎯 **Renders a live threat proximity arena** — threats orbit your Core at a distance proportional to their emotional weight and criticality score
-- 🛡️ **Shows active defense shields** between your Core and each threat, labelled and removable
-- 🖱️ **Drag & drop defense tools** from the palette onto the arena
-- 📡 **Real-time telemetry** — RAM %, BPM, CS state, thermal throttling indicator
-- 🤖 **Learns new symbols** — any unknown keyword in your code is absorbed into the registry
-- 📝 **Bidirectional compilation** — write LINGHOS code → see the visual output; or drag tools visually → see the generated code
-- 🗑️ **Delete learned skills** and symbols from the registry
-- 📖 **Built-in LINGHOS command guide** — every command explained inline
+| Protocol ID | Classification | Objective | Implementation |
+| :--- | :--- | :--- | :--- |
+| **`PATCH-00`** | System Lockdown | Safe Mode Offline: complete isolation & external input disconnect | [`updates/Patch00-ENG.md`](./updates/Patch00-ENG.md) |
+| **`GAP-001`** | Loop Interrupt | G.A.P. Protocol: Active paranoia management & unclassified loop brake | [`protocols/en/GAP-001-protocol.md`](./protocols/en/GAP-001-protocol.md) |
 
 ---
 
-## 📡 LINGHOS Command Reference
+## 🌐 Language Areas / Aree Linguistiche
 
-| Command | Syntax | What it does |
-|---------|--------|-------------|
-| **Include module** | `#include <Defense_Mode>` | Loads a macro family |
-| **Declare target** | `Get: Name(alias)[weight];` | Registers a human variable/threat |
-| **Set criticality** | `Set_CriticVal >> alias = [val]` | Assigns threat level 1–10 |
-| **Start VM** | `@Start>(VM_Name){ ON> target; }` | Sandboxes a target in a virtual machine |
-| **Call skill** | `Call >> Ice_shield;` | Activates a cognitive defense tool |
-| **Conditional** | `IF(CS_EXPOSED){ ... }` | Executes a block if the condition is true |
-| **Override defenses** | `OVR >> (DDS, ADS)` | Engages dynamic defense overrides |
-| **Lockdown** | `/SET_Lockdown_Mode{ Take_DOWN > (alias)'s_Core }` | Full emotional detachment from target |
-| **Behavior mode** | `BE> worm_like` | Sets interaction posture |
-| **Echo log** | `Echo("message")` | Writes a message to the telemetry log |
-| **End session** | `<<@end` | Closes and purges volatile buffers |
-| **GAP Protocol** | `Call >> G.A.P.protocol;` | Interrupts infinite paranoia loops |
-
----
-
-## 🩹 Protocols & Patches
-
-Protocols are ready-to-use LINGHOS programs for specific cognitive situations.
-
-| ID | Name | Description |
-|----|------|-------------|
-| `PATCH-00` | Safe Mode Offline | Full system lockdown — offline mode |
-| `GAP-001` | G.A.P. Protocol | Breaks infinite paranoia loops on chaotic input X |
-
-→ See [`/updates/`](https://github.com/SystemAdmin01/HumOS/tree/main/updates) and [`/ENG/protocols/`](https://github.com/SystemAdmin01/HumOS/tree/main/ENG/protocols)
-
----
-
-## 🌐 Choose Your Language
-
-<div align="center">
-
-| 🇮🇹 Italian | 🇬🇧 English |
-|------------|------------|
-| [**→ Area Italiana**](./ITA/) | [**→ English Area**](./ENG/) |
-| Documentazione completa in italiano | Full documentation in English |
-
-</div>
-
----
-
-## 🧩 Core Concepts
-
-**CS — Core Self**  
-The protected kernel of your identity. Can be `SECURE`, `EXPOSED`, or `UNLOCKED`.  
-Everything in HumOS is designed to protect and regulate the CS.
-
-**Target**  
-Any person, situation, or stimulus that exerts pressure on your system.  
-Each target has an emotional `weight` (1–10) and a `criticality` score (1–10).
-
-**Defense Skills**  
-Cognitive tools deployed as shields — `Ice_shield`, `Double_Bottom_Shield`, `isolation`, `analyst`, `sniffer`, `Poison_skills`, and more.
-
-**Virtual Machine (VM)**  
-A mental sandbox that isolates a target so it cannot access the Core directly.
-
-**RAM**  
-Cognitive working memory. Orphan threads (rumination, paranoia loops) are the main source of RAM leaks.
+* 🇮🇹 **[Documentazione Ufficiale in Italiano](./docs/it/README.md)** — Leggi la guida approfondita, il manifesto di ingegneria cognitiva e la sintassi completa di LINGHOS.
+* 🇬🇧 **[English Official Documentation](./docs/en/README.md)** — Read the core framework architecture, ADHD operating models, and LINGHOS manual.
 
 ---
 
 ## 📄 License
 
-MIT — see [LICENSE.txt](LICENSE.txt)
+Distributed under the **MIT License**. See [`LICENSE.txt`](LICENSE.txt) for more details.
 
 ---
 
 <div align="center">
 
-**HumOS** — *Engineering the mind. One protocol at a time.*  
-Built by [SystemAdmin01](https://github.com/SystemAdmin01)
+**HumOS Project** • Designed with precision by [SystemAdmin01](https://github.com/SystemAdmin01)  
+*Cognitive Engineering for the Neurodivergent Mind.*
 
 </div>
