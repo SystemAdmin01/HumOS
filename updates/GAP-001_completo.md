@@ -269,4 +269,4 @@ Main() {
 ---
 
 *Autore: HumOS SysAdmin | Versione: 2.1 | PATCH_ID: GAP-001*  
-*Repository: [https://github.com/SystemAdmin01/HumOS](https://github.com/SystemAdmin01/HumOS)*
+*Repository: [https://github.com/SystemAdmin01/HumOS]*
