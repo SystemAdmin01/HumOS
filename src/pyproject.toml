@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "linghos"
+version = "1.0.0"
+description = "Cognitive Execution Runtime and DSL for HumOS"
+readme = "README.md"
+authors = [{ name = "Diego / SystemAdmin01" }]
+license = { text = "CC BY-NC-ND 4.0" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+    "Intended Audience :: Healthcare Industry",
+    "Topic :: Scientific/Engineering",
+]
+requires-python = ">=3.8"
+
+[project.scripts]
+linghos = "linghos.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["linghos*"]

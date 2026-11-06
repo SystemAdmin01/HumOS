@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>HumOS // LINGHOS Visual Compiler & Cockpit</title>
+    <style>
+        :root {
+            --bg-base: #05070c;
+            --bg-panel: #0a0e17;
+            --bg-card: #0f172a;
+            --border-panel: #1e293b;
+            --border-active: #00f0ff;
+            --cyan: #00f0ff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+            --purple: #a855f7;
+            --blue: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+        body { background: var(--bg-base); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* Header */
+        header { 
+            background: #080c14; 
+            border-bottom: 1px solid var(--border-panel); 
+            padding: 8px 18px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 0 15px rgba(0,240,255,0.08);
+            cursor: pointer;
+        }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .logo { font-size: 1.1rem; font-weight: 800; color: var(--cyan); letter-spacing: 2px; }
+        .logo span { color: #fff; font-weight: 400; font-size: 0.75rem; border-left: 1px solid #334155; padding-left: 10px; margin-left: 10px; }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        
+        .badge-btn { 
+            background: #0f172a; 
+            border: 1px solid var(--border-panel); 
+            color: var(--text-muted); 
+            padding: 4px 10px; 
+            border-radius: 4px; 
+            font-size: 0.75rem; 
+            cursor: pointer; 
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-btn:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: 0 0 8px rgba(0,240,255,0.2); }
+        .badge-active { border-color: var(--green); color: var(--green); }
+
+        /* Main Workspace */
+        .workspace { display: grid; grid-template-columns: 38% 62%; height: calc(100vh - 50px); overflow: hidden; }
+
+        /* Left: Editor & Palette */
+        .left-col { background: var(--bg-panel); border-right: 1px solid var(--border-panel); display: flex; flex-direction: column; padding: 12px; gap: 10px; }
+        
+        .toolbar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        button { background: #0f172a; border: 1px solid var(--border-panel); color: var(--text-main); padding: 5px 10px; font-size: 0.75rem; border-radius: 4px; cursor: pointer; transition: 0.15s; }
+        button:hover { border-color: var(--cyan); color: var(--cyan); }
+        button.btn-primary { background: #047857; border-color: var(--green); color: #fff; font-weight: bold; }
+        button.btn-primary:hover { background: var(--green); color: #000; box-shadow: 0 0 10px var(--green); }
+        button.btn-danger { background: #991b1b; border-color: var(--red); color: #fff; }
+
+        .editor-wrapper { flex: 1; display: flex; flex-direction: column; position: relative; }
+        textarea { 
+            flex: 1; 
+            background: #030508; 
+            border: 1px solid var(--border-panel); 
+            border-radius: 4px; 
+            color: #7dd3fc; 
+            padding: 10px; 
+            font-size: 0.82rem; 
+            line-height: 1.45; 
+            resize: none; 
+            outline: none; 
+            white-space: pre; 
+        }
+        textarea:focus { border-color: var(--cyan); }
+        textarea.drag-over { border-color: var(--cyan); background: #060e18; }
+
+        /* Palette of Draggable Defenses */
+        .defense-palette { 
+            background: #070b12; 
+            border: 1px dashed #334155; 
+            border-radius: 6px; 
+            padding: 8px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+        }
+        .palette-title { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; display: flex; justify-content: space-between; }
+        .defense-tools { display: flex; gap: 6px; flex-wrap: wrap; }
+        .tool-chip { 
+            background: #0f172a; 
+            border: 1px solid #334155; 
+            color: #cbd5e1; 
+            padding: 4px 8px; 
+            font-size: 0.72rem; 
+            border-radius: 4px; 
+            cursor: grab; 
+            user-select: none; 
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .tool-chip:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-1px); }
+        .tool-chip:active { cursor: grabbing; }
+
+        /* Right: Interactive Cockpit & Canvas */
+        .right-col { display: flex; flex-direction: column; overflow-y: auto; padding: 12px; gap: 12px; background: #04060a; }
+
+        /* Telemetry Cards */
+        .telemetry-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .tele-card { 
+            background: var(--bg-card); 
+            border: 1px solid var(--border-panel); 
+            border-radius: 6px; 
+            padding: 10px; 
+            cursor: pointer; 
+            transition: 0.2s;
+            position: relative;
+        }
+        .tele-card:hover { border-color: var(--cyan); box-shadow: 0 0 10px rgba(0,240,255,0.15); transform: translateY(-1px); }
+        .tele-title { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; display: flex; justify-content: space-between; }
+        .tele-val { font-size: 1.15rem; font-weight: 800; margin-top: 4px; }
+        .tele-sub { font-size: 0.68rem; color: #94a3b8; margin-top: 3px; }
+        
+        .progress-bar-bg { background: #1e293b; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 6px; }
+        .progress-bar-fill { height: 100%; transition: width 0.4s ease; }
+
+        /* Mid Arena Grid */
+        .arena-grid { display: grid; grid-template-columns: 55% 45%; gap: 10px; height: 350px; }
+        
+        /* Proximity Sandbox Canvas Box */
+        .arena-box { 
+            background: #020408; 
+            border: 1px solid var(--border-panel); 
+            border-radius: 6px; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            transition: 0.2s;
+        }
+        .arena-box.drag-over { border-color: var(--cyan); box-shadow: 0 0 15px rgba(0,240,255,0.25); }
+        
+        .arena-header { 
+            padding: 6px 10px; 
+            background: #090d16; 
+            border-bottom: 1px solid #1e293b; 
+            font-size: 0.7rem; 
+            color: var(--text-muted); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .arena-canvas-container { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            position: relative; 
+            overflow: hidden; 
+        }
+        
+        /* Target Table & Triage */
+        .target-box { background: var(--bg-card); border: 1px solid var(--border-panel); border-radius: 6px; display: flex; flex-direction: column; padding: 10px; }
+        .target-box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .target-table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
+        .target-table th, .target-table td { padding: 5px 6px; border-bottom: 1px solid #1e293b; text-align: left; }
+        .target-table th { color: var(--text-muted); font-size: 0.68rem; }
+        .target-table tr { cursor: pointer; transition: 0.15s; }
+        .target-table tr:hover { background: #1e293b; }
+        
+        .pill { padding: 2px 5px; border-radius: 3px; font-size: 0.65rem; font-weight: bold; }
+        .pill-red { background: rgba(239,68,68,0.2); color: var(--red); border: 1px solid var(--red); }
+        .pill-yellow { background: rgba(245,158,11,0.2); color: var(--yellow); border: 1px solid var(--yellow); }
+        .pill-green { background: rgba(16,185,129,0.2); color: var(--green); border: 1px solid var(--green); }
+
+        /* Report & Diagnostics */
+        .report-box { background: #070d18; border-left: 3px solid var(--cyan); padding: 10px 14px; border-radius: 4px; cursor: pointer; }
+        .report-box h4 { font-size: 0.8rem; color: var(--cyan); display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .report-box ul { list-style: none; font-size: 0.78rem; line-height: 1.5; color: #cbd5e1; }
+        .report-box li { margin-bottom: 4px; }
+
+        /* Diagnostic Bar */
+        .diag-bar { 
+            background: #0a0f1d; 
+            border: 1px solid var(--border-panel); 
+            border-radius: 4px; 
+            padding: 6px 12px; 
+            font-size: 0.72rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        /* Modal Overlay */
+        .modal-overlay { 
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0; 
+            background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(4px); 
+            display: none; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 999; 
+        }
+        .modal-box { 
+            background: #090e17; 
+            border: 1px solid var(--cyan); 
+            border-radius: 8px; 
+            width: 520px; 
+            max-width: 90vw; 
+            padding: 20px; 
+            box-shadow: 0 0 25px rgba(0,240,255,0.25); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px; 
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 10px; }
+        .modal-title { font-size: 1rem; font-weight: bold; color: var(--cyan); }
+        .modal-close { background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer; }
+        .modal-close:hover { color: #fff; }
+        .modal-body { font-size: 0.82rem; line-height: 1.5; color: #cbd5e1; display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow-y: auto; }
+        
+        .slider-group { display: flex; flex-direction: column; gap: 4px; }
+        .slider-row { display: flex; justify-content: space-between; font-size: 0.75rem; color: #94a3b8; }
+        input[type=range] { accent-color: var(--cyan); width: 100%; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header onclick="openInfoModal('architecture')">
+        <div class="header-left">
+            <div class="logo">⚡ HUMOS // LINGHOS <span>COMPILER & COGNITIVE ARENA v2.0</span></div>
+        </div>
+        <div class="header-actions">
+            <div class="badge-btn" onclick="event.stopPropagation(); openSymbolRegistryModal()">
+                <span>📚 Simbologia & Nuove Skill</span>
+                <span id="symbolCountBadge" style="background:var(--cyan); color:#000; padding:1px 5px; border-radius:3px; font-weight:bold;">19</span>
+            </div>
+            <div class="badge-btn badge-active" id="compilerStatusBadge" onclick="event.stopPropagation(); openInfoModal('compiler')">
+                <span>● COMPILER READY</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <!-- Left Column: Source Editor & Palette -->
+        <div class="left-col">
+            <div class="toolbar">
+                <span style="font-size:0.7rem; font-weight:bold; color:var(--text-muted);">PRESETS:</span>
+                <button onclick="loadPreset('incident')">Incident #01</button>
+                <button onclick="loadPreset('ramflush')">RAM Flush</button>
+                <button onclick="loadPreset('panic')">Thermal Reset</button>
+                <button class="btn-primary" onclick="compileCode()">⚡ COMPILA</button>
+            </div>
+
+            <!-- Drag & Drop Defense Palette -->
+            <div class="defense-palette" id="defensePalette">
+                <div class="palette-title">
+                    <span>SISTEMI DI DIFESA (Trascina o clicca per posizionare)</span>
+                    <span style="color:var(--cyan); cursor:pointer;" onclick="openNewSkillModal()">+ Nuova Skill</span>
+                </div>
+                <div class="defense-tools">
+                    <div class="tool-chip" draggable="true" ondragstart="handleDragStart(event, 'ice_shield')" onclick="deployDefense('ice_shield')">
+                        🧊 Ice Shield
+                    </div>
+                    <div class="tool-chip" draggable="true" ondragstart="handleDragStart(event, 'double_bottom')" onclick="deployDefense('double_bottom')">
+                        🛡️ Double-Bottom
+                    </div>
+                    <div class="tool-chip" draggable="true" ondragstart="handleDragStart(event, 'dds_ads')" onclick="deployDefense('dds_ads')">
+                        ⚡ OVR (DDS/ADS)
+                    </div>
+                    <div class="tool-chip" draggable="true" ondragstart="handleDragStart(event, 'hp_vm')" onclick="deployDefense('hp_vm')">
+                        📦 HP Defense VM
+                    </div>
+                    <div class="tool-chip" draggable="true" ondragstart="handleDragStart(event, 'lockdown')" onclick="deployDefense('lockdown')">
+                        🔒 Lockdown Clamp
+                    </div>
+                    <div class="tool-chip" draggable="true" ondragstart="handleDragStart(event, 'poison')" onclick="deployDefense('poison')">
+                        🗡️ Poison Skills
+                    </div>
+                    <div class="tool-chip" draggable="true" ondragstart="handleDragStart(event, 'sniffer')" onclick="deployDefense('sniffer')">
+                        📡 Sniffer Probe
+                    </div>
+                </div>
+            </div>
+
+            <div class="editor-wrapper">
+                <textarea id="linghosCode" spellcheck="false" placeholder="// Digita o trascina qui codice LINGHOS..."></textarea>
+            </div>
+
+            <div class="diag-bar">
+                <span id="diagStats">Righe: -- | Tempo: -- ms</span>
+                <span id="diagStatus" style="color:var(--green);">Codice Validato</span>
+            </div>
+        </div>
+
+        <!-- Right Column: Interactive Cockpit & Canvas -->
+        <div class="right-col">
+            <!-- Telemetry Row (Every card is clickable) -->
+            <div class="telemetry-row">
+                <div class="tele-card" onclick="openInspector('ram')">
+                    <div class="tele-title">Mental RAM Usage <span>🔍</span></div>
+                    <div class="tele-val" id="valRam">--%</div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="barRam" style="width: 0%; background: var(--green);"></div></div>
+                    <div class="tele-sub" id="subRam">Carico cognitivo nominale</div>
+                </div>
+
+                <div class="tele-card" onclick="openInspector('vitals')">
+                    <div class="tele-title">Hardware Vitals <span>🔍</span></div>
+                    <div class="tele-val" id="valBpm">-- bpm</div>
+                    <div class="tele-sub" id="valThermal">Thermal: Normale</div>
+                </div>
+
+                <div class="tele-card" onclick="openInspector('vault')">
+                    <div class="tele-title">Core CS Vault (Layer 0) <span>🔍</span></div>
+                    <div class="tele-val" id="valVault" style="color:var(--green);">SECURE</div>
+                    <div class="tele-sub" id="valMode">Mode: STANDBY</div>
+                </div>
+
+                <div class="tele-card" onclick="openInspector('engines')">
+                    <div class="tele-title">Sistemi di Difesa <span>🔍</span></div>
+                    <div class="tele-val" id="valEngines" style="color:var(--cyan); font-size:0.9rem;">DDS / ADS: NORMAL</div>
+                    <div class="tele-sub" id="valShield">Ice Shield: OFFLINE</div>
+                </div>
+            </div>
+
+            <!-- Arena Grid: Dynamic Threat Proximity Arena + Target Triage -->
+            <div class="arena-grid">
+                <!-- Visual Sandboxing Arena (Proximity Radar) -->
+                <div class="arena-box" id="arenaDropZone">
+                    <div class="arena-header">
+                        <span>ORBITA DINAMICA MINACCE & SCUDI DI PROTEZIONE CORE</span>
+                        <span style="font-size:0.65rem; color:var(--cyan);">RADIAL PROXIMITY ARENA</span>
+                    </div>
+                    <div class="arena-canvas-container" id="arenaSvgContainer">
+                        <!-- Dynamic SVG Proximity Radar Rendered Here -->
+                    </div>
+                </div>
+
+                <!-- Target Malware Triage -->
+                <div class="target-box">
+                    <div class="target-box-header">
+                        <span style="font-size:0.75rem; font-weight:bold; color:var(--text-muted);">TARGET TRIAGE & TASSONOMIA</span>
+                        <button style="font-size:0.65rem;" onclick="openNewTargetModal()">+ Nuovo Target</button>
+                    </div>
+                    <div style="flex:1; overflow-y:auto;">
+                        <table class="target-table">
+                            <thead>
+                                <tr>
+                                    <th>Target</th>
+                                    <th>Peso</th>
+                                    <th>Critic</th>
+                                    <th>Raggio</th>
+                                    <th>Core / Ponti</th>
+                                </tr>
+                            </thead>
+                            <tbody id="targetsTbody">
+                                <tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Nessun target registrato.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Case-Specific Solution Report (Clickable) -->
+            <div class="report-box" onclick="openInspector('solution')">
+                <h4>🛡️ REPORT RISOLUTIVO SPECIFICO PER QUESTO CASO <span>🔍 Dettagli</span></h4>
+                <ul id="solutionStepsUl">
+                    <li>Compila uno script LINGHOS per generare la risposta operativa.</li>
+                </ul>
+            </div>
+
+            <!-- Live Audit Log Stream -->
+            <div class="tele-card" style="cursor:default;" onclick="openInspector('logs')">
+                <div class="tele-title">Audit Trail & Incident Response Stream <span>(Clicca per log esteso)</span></div>
+                <div id="logStreamBox" style="max-height:100px; overflow-y:auto; font-size:0.72rem; margin-top:6px; display:flex; flex-direction:column; gap:3px;">
+                    <div style="color:var(--text-muted);">--:--:-- Sistema inizializzato. In attesa di istruzioni.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Universal Inspector Modal -->
+    <div class="modal-overlay" id="inspectorModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">INSPECTOR</div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Injected dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State Cache
+        let currentCompiledData = null;
+
+        const PRESETS = {
+            incident: `// INCIDENT LOG #01 - DECLASSIFICATO SUL CAMPO
+#include Defense_Mode 
+#include Attack_Mode 
+
+Get: Sara(sa)[4], Matiew(ma)[3], Giulia(giu);
+Set_CriticVal>>giu=[9]
+
+LP=low priority
+HP=High priority
+
+Main(){
+    @Start>(LP_Ambient_VM){
+        ON>sa,ma;
+    }
+
+    @Start>(HP_EXT_Defense_VM){
+        ON>giu;
+    }
+
+    Call >> isolation 
+    Call >> analyst 
+    Call >> sniffer(IN&OUT_resources)
+
+    /SET_Lockdown_Mode{
+        Take_DOWN(all)>(giu)'s_Core
+        Close(all)>(giu)'s_bridges
+        OVR >>(DDS,ADS)
+    }
+
+    IF(CS_EXPOSED){
+        /SET_Attack_Mode{
+            call >> Ice_shield;
+            BE>worm_like
+        }
+    }
+
+    IF(CS_UNLOCKED){
+        Call>> (Poison_skills){
+            all_instruments(attack)
+        }
+    }
+
+    <<@end
+}`,
+            ramflush: `#include <Executive_Control>
+
+Main(){
+    // Fase 1: Identificazione del sovraccarico
+    Call >> RAM_Diagnostic
+    Echo("RAM al 100%. Rilevato blocco di sistema per troppe istanze aperte.")
+
+    // Fase 2: Flush della memoria volatile
+    Call >> Drop_All_Background_Threads
+
+    // Fase 3: Isolamento task atomico
+    Echo("Atom Task: Aprire il documento e scrivere solo il titolo.")
+    Echo("Lock Cores on target: Esecuzione in corso.")
+
+    <<@end
+}`,
+            panic: `#include <Hardware_Regulation>
+
+Main(){
+    // Reset rapido durante spike d'ansia
+    Call >> RAM_Diagnostic
+    Call >> Double_Bottom_Shield
+    Call >> Ice_shield
+
+    Echo("Clamp cortisolo attivo. Battito cardiaco in riduzione. Host safe.")
+    <<@end
+}`
+        };
+
+        function loadPreset(name) {
+            const editor = document.getElementById('linghosCode');
+            if (editor) {
+                editor.value = PRESETS[name] || '';
+                compileCode();
+            }
+        }
+
+        async function compileCode() {
+            const editor = document.getElementById('linghosCode');
+            if (!editor) return;
+            const code = editor.value;
+
+            const diagStatus = document.getElementById('diagStatus');
+            if (diagStatus) diagStatus.innerHTML = '<span style="color:var(--cyan);">Compilazione in corso...</span>';
+
+            try {
+                const res = await fetch('/api/compile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: code })
+                });
+                if (!res.ok) {
+                    throw new Error('HTTP ' + res.status);
+                }
+                const data = await res.json();
+                currentCompiledData = data;
+                renderAll(data);
+            } catch (err) {
+                console.error("Compile error:", err);
+                if (diagStatus) {
+                    diagStatus.innerHTML = '<span style="color:var(--red);">Errore: ' + err.message + '</span>';
+                }
+            }
+        }
+
+        function renderAll(data) {
+            const tel = data.telemetry;
+
+            // 1. Telemetry Gauges
+            const ram = tel.ram_pct;
+            document.getElementById('valRam').innerText = ram + '%';
+            const bar = document.getElementById('barRam');
+            bar.style.width = ram + '%';
+            bar.style.background = ram < 50 ? 'var(--green)' : (ram < 80 ? 'var(--yellow)' : 'var(--red)');
+            document.getElementById('subRam').innerText = ram > 80 ? '⚠️ SOVRACCARICO TERMICO' : 'Corsie RAM fluide';
+
+            document.getElementById('valBpm').innerText = tel.heart_rate_bpm + ' bpm';
+            document.getElementById('valThermal').innerText = 'Thermal: ' + (tel.thermal_throttling ? 'THROTTLING (SURRISCALDATO)' : 'NORMALE (FREDDO)');
+            document.getElementById('valThermal').style.color = tel.thermal_throttling ? 'var(--red)' : 'var(--green)';
+
+            document.getElementById('valVault').innerText = tel.cs_state;
+            document.getElementById('valVault').style.color = tel.cs_state.includes('SECURE') ? 'var(--green)' : (tel.cs_state.includes('EXPOSED') ? 'var(--yellow)' : 'var(--red)');
+            document.getElementById('valMode').innerText = 'Modalità: ' + tel.active_mode;
+
+            const dds = tel.dds_override ? '<span style="color:var(--green)">OVERCLOCK</span>' : 'NORMAL';
+            const ads = tel.ads_override ? '<span style="color:var(--green)">OVERCLOCK</span>' : 'NORMAL';
+            document.getElementById('valEngines').innerHTML = `DDS: ${dds} | ADS: ${ads}`;
+            document.getElementById('valShield').innerHTML = 'Ice Shield: ' + (tel.ice_shield ? '<span style="color:var(--cyan)">ENGAGED (60 BPM)</span>' : 'OFFLINE');
+
+            // 2. Diagnostics
+            document.getElementById('diagStats').innerText = `Righe: ${data.compiler_meta.lines_compiled} | Tempo: ${data.compiler_meta.compile_time_ms} ms`;
+            if (data.compiler_meta.diagnostics.length > 0) {
+                const crit = data.compiler_meta.diagnostics.find(d => d.level === 'CRITICAL');
+                if (crit) {
+                    document.getElementById('diagStatus').innerHTML = `<span style="color:var(--red);">⚠️ ${crit.msg}</span>`;
+                } else {
+                    document.getElementById('diagStatus').innerHTML = `<span style="color:var(--yellow);">${data.compiler_meta.diagnostics[0].msg}</span>`;
+                }
+            } else {
+                document.getElementById('diagStatus').innerHTML = `<span style="color:var(--green);">✓ Codice Validato (Nessuna falla)</span>`;
+            }
+
+            // 3. Targets Table
+            const tbody = document.getElementById('targetsTbody');
+            if (!data.targets || data.targets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Nessun target registrato.</td></tr>';
+            } else {
+                tbody.innerHTML = data.targets.map(t => {
+                    const criticClass = t.critic_val >= 8 ? 'pill-red' : (t.critic_val >= 5 ? 'pill-yellow' : 'pill-green');
+                    const coreClass = t.core_connected ? 'pill-green' : 'pill-red';
+                    const bridgesClass = t.bridges_open ? 'pill-green' : 'pill-red';
+                    return `
+                        <tr onclick="openTargetInspector('${t.alias}')">
+                            <td><b>${t.name}</b> (${t.alias})</td>
+                            <td>[${t.weight}/10]</td>
+                            <td><span class="pill ${criticClass}">[${t.critic_val}/10]</span></td>
+                            <td style="font-weight:bold; color:${t.proximity_radius < 85 ? 'var(--red)' : 'var(--cyan)'};">${t.proximity_radius}px</td>
+                            <td><span class="pill ${coreClass}">${t.core_connected ? 'UP' : 'OFF'}</span> / <span class="pill ${bridgesClass}">${t.bridges_open ? 'OPEN' : 'CUT'}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // 4. Dynamic Proximity SVG Radar Arena
+            renderProximityArena(data);
+
+            // 5. Solution Report
+            document.getElementById('solutionStepsUl').innerHTML = data.solution_steps.map(s => `<li>${s}</li>`).join('');
+
+            // 6. Log Stream
+            const logBox = document.getElementById('logStreamBox');
+            logBox.innerHTML = data.logs.slice(-12).map(l => {
+                let color = 'var(--text-muted)';
+                if (l.phase === 'DETECT') color = 'var(--cyan)';
+                if (l.phase === 'ISOLATE') color = 'var(--yellow)';
+                if (l.phase === 'COUNTER') color = 'var(--green)';
+                if (l.phase === 'ESCALATE') color = 'var(--red)';
+                return `<div><span style="color:#64748b;">${l.ts}</span> <span style="color:${color}; font-weight:bold;">[${l.phase}]</span> [${l.subsystem}] ${l.msg}</div>`;
+            }).join('');
+            logBox.scrollTop = logBox.scrollHeight;
+
+            // 7. Symbol count badge
+            if (data.symbols) {
+                document.getElementById('symbolCountBadge').innerText = data.symbols.length;
+            }
+        }
+
+        /* Dynamic Proximity Arena SVG Rendering */
+        function renderProximityArena(data) {
+            const container = document.getElementById('arenaSvgContainer');
+            if (!container) return;
+            const targets = data.targets || [];
+            const tel = data.telemetry;
+            const w = 380, h = 310;
+            const cx = w / 2, cy = h / 2;
+
+            let svg = `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="background:#020408;">
+                <defs>
+                    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.8"/>
+                        <stop offset="100%" stop-color="#00f0ff" stop-opacity="0"/>
+                    </radialGradient>
+                    <radialGradient id="dangerGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#ef4444" stop-opacity="0.5"/>
+                        <stop offset="100%" stop-color="#ef4444" stop-opacity="0"/>
+                    </radialGradient>
+                </defs>
+
+                <!-- Concentric Proximity Threat Horizon Rings -->
+                <!-- Safe Perimeter -->
+                <circle cx="${cx}" cy="${cy}" r="155" fill="none" stroke="#1e293b" stroke-dasharray="3,3" />
+                <text x="${cx + 120}" y="${cy - 95}" font-size="7" fill="#475569">OUTER (AMBIENT)</text>
+
+                <!-- Mid Engagement Perimeter -->
+                <circle cx="${cx}" cy="${cy}" r="105" fill="none" stroke="#334155" stroke-dasharray="2,2" />
+                <text x="${cx + 80}" y="${cy - 65}" font-size="7" fill="#64748b">MID ENGAGEMENT</text>
+
+                <!-- Danger Horizon -->
+                <circle cx="${cx}" cy="${cy}" r="65" fill="none" stroke="rgba(239,68,68,0.4)" stroke-width="1.5" stroke-dasharray="4,4" />
+                <text x="${cx + 42}" y="${cy - 45}" font-size="7" fill="#ef4444">CRITICAL HORIZON</text>
+
+                <!-- Defense Shield Layer 1: Double-Bottom Shield -->
+                ${tel.double_bottom ? `
+                    <circle cx="${cx}" cy="${cy}" r="50" fill="none" stroke="#3b82f6" stroke-width="2.5" opacity="0.8" />
+                    <circle cx="${cx}" cy="${cy}" r="44" fill="none" stroke="#3b82f6" stroke-width="1" stroke-dasharray="3,3" />
+                ` : ''}
+
+                <!-- Defense Shield Layer 2: Ice Shield -->
+                ${tel.ice_shield ? `
+                    <polygon points="${getHexagonPoints(cx, cy, 38)}" fill="rgba(0,240,255,0.15)" stroke="#00f0ff" stroke-width="2" />
+                ` : ''}
+
+                <!-- Defense Engine Gyrostabilizer (DDS / ADS Overclock) -->
+                ${tel.dds_override ? `
+                    <ellipse cx="${cx}" cy="${cy}" rx="42" ry="24" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5,3">
+                        <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="6s" repeatCount="indefinite"/>
+                    </ellipse>
+                ` : ''}
+
+                <!-- Poison Blades -->
+                ${tel.poison_engaged ? `
+                    <line x1="${cx}" y1="${cy-28}" x2="${cx}" y2="${cy-48}" stroke="#ef4444" stroke-width="2" />
+                    <line x1="${cx}" y1="${cy+28}" x2="${cx}" y2="${cy+48}" stroke="#ef4444" stroke-width="2" />
+                    <line x1="${cx-28}" y1="${cy}" x2="${cx-48}" y2="${cy}" stroke="#ef4444" stroke-width="2" />
+                    <line x1="${cx+28}" y1="${cy}" x2="${cx+48}" y2="${cy}" stroke="#ef4444" stroke-width="2" />
+                ` : ''}
+
+                <!-- Central Core (Layer 0 Vault) - Clickable -->
+                <circle cx="${cx}" cy="${cy}" r="22" fill="#030712" stroke="${tel.cs_state.includes('SECURE') ? '#00f0ff' : '#ef4444'}" stroke-width="2.5" onclick="openInspector('vault')" style="cursor:pointer;" />
+                <circle cx="${cx}" cy="${cy}" r="14" fill="${tel.cs_state.includes('SECURE') ? '#00f0ff' : '#ef4444'}" fill-opacity="0.3" onclick="openInspector('vault')" style="cursor:pointer;" />
+                <text x="${cx}" y="${cy + 4}" text-anchor="middle" font-size="8" fill="#fff" font-weight="bold" onclick="openInspector('vault')" style="cursor:pointer;">CORE</text>
+            `;
+
+            // Draw Targets dynamically at their calculated proximity radius
+            const angleStep = (Math.PI * 2) / Math.max(targets.length, 1);
+            targets.forEach((t, idx) => {
+                const angle = idx * angleStep - Math.PI / 2;
+                const r = t.proximity_radius;
+                const tx = cx + Math.cos(angle) * r;
+                const ty = cy + Math.sin(angle) * r;
+
+                const isHostile = t.critic_val >= 7 || t.weight >= 8;
+                const color = isHostile ? '#ef4444' : (t.critic_val >= 4 ? '#f59e0b' : '#10b981');
+
+                if (t.bridges_open) {
+                    svg += `<line x1="${cx}" y1="${cy}" x2="${tx}" y2="${ty}" stroke="#334155" stroke-width="1.2" />`;
+                } else {
+                    const midX = (cx + tx) / 2;
+                    const midY = (cy + ty) / 2;
+                    svg += `<line x1="${cx}" y1="${cy}" x2="${midX}" y2="${midY}" stroke="#ef4444" stroke-dasharray="3,3" stroke-width="1.5" />`;
+                    svg += `<line x1="${midX - 4}" y1="${midY - 4}" x2="${midX + 4}" y2="${midY + 4}" stroke="#ef4444" stroke-width="2" />`;
+                    svg += `<line x1="${midX + 4}" y1="${midY - 4}" x2="${midX - 4}" y2="${midY + 4}" stroke="#ef4444" stroke-width="2" />`;
+                }
+
+                // Check if target is inside a VM Sandbox
+                const isInVM = (data.vms || []).some(v => v.targets.includes(t.alias) || v.targets.includes(t.name));
+                if (isInVM) {
+                    svg += `<rect x="${tx - 19}" y="${ty - 19}" width="38" height="38" fill="none" stroke="${color}" stroke-dasharray="3,3" stroke-width="1.5" rx="4" />`;
+                    svg += `<text x="${tx}" y="${ty - 22}" text-anchor="middle" font-size="6.5" fill="${color}">VM-SANDBOX</text>`;
+                }
+
+                // Target Node (Clickable)
+                svg += `
+                    <g onclick="openTargetInspector('${t.alias}')" style="cursor:pointer;">
+                        <circle cx="${tx}" cy="${ty}" r="13" fill="#090e17" stroke="${color}" stroke-width="2" />
+                        <text x="${tx}" y="${ty + 3.5}" text-anchor="middle" font-size="8" fill="#fff" font-weight="bold">${t.alias}</text>
+                        <text x="${tx}" y="${ty + 22}" text-anchor="middle" font-size="7" fill="${color}">P:[${t.weight}] C:[${t.critic_val}]</text>
+                    </g>
+                `;
+            });
+
+            svg += `</svg>`;
+            container.innerHTML = svg;
+        }
+
+        function getHexagonPoints(x, y, r) {
+            let pts = [];
+            for (let i = 0; i < 6; i++) {
+                let a = (Math.PI / 3) * i;
+                pts.push((x + r * Math.cos(a)) + ',' + (y + r * Math.sin(a)));
+            }
+            return pts.join(" ");
+        }
+
+        /* Drag and Drop Handling */
+        function handleDragStart(ev, toolType) {
+            ev.dataTransfer.setData("text/plain", toolType);
+            ev.dataTransfer.setData("application/x-linghos-tool", toolType);
+            ev.dataTransfer.effectAllowed = "copy";
+        }
+
+        function handleDragOver(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            ev.dataTransfer.dropEffect = "copy";
+            const zone = document.getElementById('arenaDropZone');
+            if (zone) zone.classList.add('drag-over');
+        }
+
+        function handleDragLeave(ev) {
+            const zone = document.getElementById('arenaDropZone');
+            if (zone) zone.classList.remove('drag-over');
+        }
+
+        function handleDrop(ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const zone = document.getElementById('arenaDropZone');
+            if (zone) zone.classList.remove('drag-over');
+            const editor = document.getElementById('linghosCode');
+            if (editor) editor.classList.remove('drag-over');
+
+            let toolType = ev.dataTransfer.getData("application/x-linghos-tool") || ev.dataTransfer.getData("text/plain");
+            if (toolType) {
+                deployDefense(toolType.trim());
+            }
+        }
+
+        /* Deploy Defense & Dynamic Code Generation */
+        function deployDefense(toolType) {
+            const editor = document.getElementById('linghosCode');
+            if (!editor) return;
+            const current = editor.value;
+
+            // Pick primary target alias if available
+            let targetAlias = "target";
+            if (currentCompiledData && currentCompiledData.targets && currentCompiledData.targets.length > 0) {
+                targetAlias = currentCompiledData.targets[0].alias;
+            }
+
+            let insertedDesc = toolType;
+
+            switch(toolType) {
+                case 'ice_shield':
+                    insertedDesc = "Ice Shield";
+                    insertIntoMain(editor, "Call >> Ice_shield;");
+                    break;
+                case 'double_bottom':
+                    insertedDesc = "Double-Bottom Shield";
+                    insertIntoMain(editor, "Call >> Double_Bottom_Shield;");
+                    break;
+                case 'dds_ads':
+                    insertedDesc = "OVR (DDS/ADS)";
+                    insertIntoMain(editor, "OVR >>(DDS, ADS)");
+                    break;
+                case 'hp_vm':
+                    insertedDesc = "HP Defense VM (" + targetAlias + ")";
+                    insertIntoMain(editor, "@Start>(HP_EXT_Defense_VM){\n\t\tON>" + targetAlias + ";\n\t}");
+                    break;
+                case 'lockdown':
+                    insertedDesc = "Lockdown (" + targetAlias + ")";
+                    insertIntoMain(editor, "/SET_Lockdown_Mode{\n\t\tTake_DOWN(all)>(" + targetAlias + ")'s_Core\n\t\tClose(all)>(" + targetAlias + ")'s_bridges\n\t\tOVR >>(DDS, ADS)\n\t}");
+                    break;
+                case 'poison':
+                    insertedDesc = "Poison Skills (Escalation)";
+                    insertIntoMain(editor, "IF(CS_UNLOCKED){\n\t\tCall>> (Poison_skills){\n\t\t\tall_instruments(attack)\n\t\t}\n\t}");
+                    break;
+                case 'sniffer':
+                    insertedDesc = "Sniffer Probe";
+                    insertIntoMain(editor, "Call >> sniffer(IN&OUT_resources)");
+                    break;
+                default:
+                    // Custom learned skill
+                    insertedDesc = toolType;
+                    insertIntoMain(editor, "Call >> " + toolType + ";");
+                    break;
+            }
+
+            showToast("⚡ Schierato: " + insertedDesc + " integrato nel codice");
+            compileCode();
+        }
+
+        function insertIntoMain(editor, codeSnippet) {
+            let text = editor.value;
+            const match = text.match(/Main\s*\(\s*\)\s*\{/i);
+            if (match) {
+                const index = match.index + match[0].length;
+                editor.value = text.slice(0, index) + "\n\t" + codeSnippet.trim() + text.slice(index);
+            } else {
+                editor.value = text.trim() + "\n\nMain(){\n\t" + codeSnippet.trim() + "\n\t<<@end\n}";
+            }
+        }
+
+        function showToast(message) {
+            let toast = document.getElementById('cockpitToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'cockpitToast';
+                toast.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#047857; border:1px solid #10b981; color:#fff; padding:8px 16px; border-radius:4px; font-size:0.75rem; font-weight:bold; z-index:9999; box-shadow:0 0 15px rgba(16,185,129,0.3); transition:0.3s; pointer-events:none;';
+                document.body.appendChild(toast);
+            }
+            toast.innerText = message;
+            toast.style.opacity = '1';
+            clearTimeout(toast.timer);
+            toast.timer = setTimeout(() => {
+                toast.style.opacity = '0';
+            }, 2500);
+        }
+
+        /* Interactive Modal Inspectors */
+        function openInspector(type) {
+            const modal = document.getElementById('inspectorModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            modal.style.display = 'flex';
+
+            if (!currentCompiledData) return;
+            const tel = currentCompiledData.telemetry;
+
+            switch(type) {
+                case 'ram':
+                    title.innerText = "🔍 INSPECTOR: ALLOCAZIONE RAM & THREAD COGNITIVI";
+                    body.innerHTML = `
+                        <p><b>Utilizzo Attuale RAM:</b> <span style="font-size:1.2rem; color:${tel.ram_pct > 75 ? 'var(--red)' : 'var(--green)'}; font-weight:bold;">${tel.ram_pct}%</span></p>
+                        <p>Nell'architettura HumOS, la memoria di lavoro è un'autostrada a quattro corsie. I compiti procrastinati e i sensi di colpa agiscono come thread orfani che bloccano l'asfalto.</p>
+                        <div style="background:#0f172a; padding:10px; border-radius:4px; border:1px solid #334155;">
+                            <b>Stato Thread:</b> ${tel.ram_pct > 80 ? '⚠️ Saturazione Imminente' : 'Fluido (Gating attivo)'}
+                        </div>
+                        <button class="btn-primary" onclick="injectRamFlush(); closeModal();">⚡ Esegui Flush Immediato (Drop All Threads)</button>
+                    `;
+                    break;
+
+                case 'vitals':
+                    title.innerText = "🔍 INSPECTOR: HARDWARE BIOLOGICO & VITALS";
+                    body.innerHTML = `
+                        <p><b>Frequenza Cardiaca:</b> ${tel.heart_rate_bpm} BPM</p>
+                        <p><b>Thermal Throttling:</b> ${tel.thermal_throttling ? '<span style="color:var(--red);">ATTIVO (Surriscaldamento biologico)</span>' : '<span style="color:var(--green);">DISATTIVATO (Temperatura ottimale)</span>'}</p>
+                        <p>I picchi di cortisolo e adrenalina vengono gestiti dal protocollo di raffreddamento Ice Shield o clamp fisiologico.</p>
+                        <button class="btn-primary" onclick="injectCooling(); closeModal();">🧊 Attiva Raffreddamento Immediato</button>
+                    `;
+                    break;
+
+                case 'vault':
+                    title.innerText = "🔍 INSPECTOR: CAVEAU LAYER 0 (CODICE SORGENTE)";
+                    body.innerHTML = `
+                        <p><b>Stato Integrità CS:</b> <span style="font-weight:bold; color:var(--cyan);">${tel.cs_state}</span></p>
+                        <p>Il Codice Sorgente racchiude la Carta delle Vulnerabilità, i valori cardine e la purezza primaria. Nessun agente esterno può avere permessi di Root.</p>
+                        <div style="display:flex; gap:10px; margin-top:8px;">
+                            <button onclick="toggleCSOverride('exposed')">Simula CS Exposed</button>
+                            <button class="btn-danger" onclick="toggleCSOverride('unlocked')">Simula CS Breached</button>
+                        </div>
+                    `;
+                    break;
+
+                case 'engines':
+                    title.innerText = "🔍 INSPECTOR: MOTORI DI DIFESA (DDS / ADS)";
+                    body.innerHTML = `
+                        <p><b>DDS (Dynamic Defense Systems):</b> ${tel.dds_override ? 'OVERCLOCK (Interrupt clamp attivo)' : 'STANDBY'}</p>
+                        <p><b>ADS (Adaptive Defense Systems):</b> ${tel.ads_override ? 'OVERCLOCK (Heuristic pattern mapping)' : 'STANDBY'}</p>
+                        <p><b>Ice Shield:</b> ${tel.ice_shield ? 'ATTIVO (Conducibilità emotiva minima)' : 'OFFLINE'}</p>
+                        <button class="btn-primary" onclick="deployDefense('dds_ads'); closeModal();">⚡ Forza Overclock DDS/ADS</button>
+                    `;
+                    break;
+
+                case 'solution':
+                    title.innerText = "🛡️ MANIFESTO RISOLUTIVO SPECIFICO PER QUESTO CASO";
+                    body.innerHTML = `
+                        <ul>${currentCompiledData.solution_steps.map(s => '<li style="margin-bottom:8px;">' + s + '</li>').join('')}</ul>
+                        <button class="btn-primary" onclick="copySolutionReport()">📋 Copia Manifesto Tattico</button>
+                    `;
+                    break;
+
+                case 'logs':
+                    title.innerText = "📜 FORENSIC AUDIT TRAIL STREAM";
+                    body.innerHTML = `
+                        <div style="max-height:50vh; overflow-y:auto;">
+                            ${currentCompiledData.logs.map(l => '<div style="padding:4px 0; border-bottom:1px solid #1e293b;"><span style="color:#64748b;">' + l.ts + '</span> <b>[' + l.phase + ']</b> [' + l.subsystem + ']: ' + l.msg + '</div>').join('')}
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
+        function copySolutionReport() {
+            if (!currentCompiledData) return;
+            const text = currentCompiledData.solution_steps.join('\n');
+            navigator.clipboard.writeText(text);
+            alert('Manifesto copiato negli appunti!');
+        }
+
+        /* Target Inspector & Dynamic Sliders */
+        function openTargetInspector(targetAlias) {
+            if (!currentCompiledData) return;
+            const target = currentCompiledData.targets.find(t => t.alias === targetAlias);
+            if (!target) return;
+
+            const modal = document.getElementById('inspectorModal');
+            document.getElementById('modalTitle').innerText = '🎯 INSPECTOR TARGET: ' + target.name + ' (' + target.alias + ')';
+            document.getElementById('modalBody').innerHTML = `
+                <div class="slider-group">
+                    <div class="slider-row">
+                        <span>PESO EMOTIVO ASSEGNATO [1-10]:</span>
+                        <b id="valSliderWeight" style="color:var(--cyan);">${target.weight}</b>
+                    </div>
+                    <input type="range" min="1" max="10" value="${target.weight}" id="sliderWeight" oninput="updateTargetSlider('${target.alias}', 'weight', this.value)">
+                </div>
+
+                <div class="slider-group" style="margin-top:10px;">
+                    <div class="slider-row">
+                        <span>INDICE DI CRITICITÀ CRITICVAL [1-10]:</span>
+                        <b id="valSliderCritic" style="color:var(--red);">${target.critic_val}</b>
+                    </div>
+                    <input type="range" min="1" max="10" value="${target.critic_val}" id="sliderCritic" oninput="updateTargetSlider('${target.alias}', 'critic', this.value)">
+                </div>
+
+                <div style="background:#020408; padding:10px; border-radius:4px; margin-top:10px; border:1px solid #1e293b;">
+                    <div><b>Distanza dal Nucleo:</b> <span id="valDistance" style="color:var(--cyan);">${target.proximity_radius}px</span></div>
+                    <div style="font-size:0.75rem; color:#94a3b8; margin-top:3px;">Più alto è il peso e la criticità, più la minaccia si avvicina al Core.</div>
+                </div>
+
+                <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                    <button class="btn-danger" onclick="executeTargetLockdown('${target.alias}'); closeModal();">🔒 Esegui Lockdown su ${target.name}</button>
+                    <button onclick="wrapInVM('${target.alias}'); closeModal();">📦 Chiudi in Sandbox VM</button>
+                </div>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function updateTargetSlider(alias, field, val) {
+            if (field === 'weight') document.getElementById('valSliderWeight').innerText = val;
+            if (field === 'critic') document.getElementById('valSliderCritic').innerText = val;
+
+            const editor = document.getElementById('linghosCode');
+            let code = editor.value;
+
+            if (field === 'weight') {
+                code = code.replace(new RegExp('(\\(' + alias + '\\))\\[\\d+\\]', 'g'), '$1[' + val + ']');
+            } else if (field === 'critic') {
+                const regex = new RegExp('Set_CriticVal\\s*>>\\s*' + alias + '\\s*=\\s*\\[?\\d+\\]?', 'g');
+                if (code.match(regex)) {
+                    code = code.replace(regex, 'Set_CriticVal>>' + alias + '=[' + val + ']');
+                } else {
+                    code = code.replace("Main(){", 'Set_CriticVal>>' + alias + '=[' + val + ']\n\nMain(){');
+                }
+            }
+            editor.value = code;
+            compileCode();
+        }
+
+        function executeTargetLockdown(alias) {
+            const editor = document.getElementById('linghosCode');
+            const snippet = "/SET_Lockdown_Mode{\n\t\tTake_DOWN(all)>(" + alias + ")'s_Core\n\t\tClose(all)>(" + alias + ")'s_bridges\n\t\tOVR >>(DDS, ADS)\n\t}";
+            insertIntoMain(editor, snippet);
+            compileCode();
+        }
+
+        function wrapInVM(alias) {
+            const editor = document.getElementById('linghosCode');
+            const snippet = "@Start>(HP_EXT_Defense_VM){\n\t\tON>" + alias + ";\n\t}";
+            insertIntoMain(editor, snippet);
+            compileCode();
+        }
+
+        function injectRamFlush() {
+            const editor = document.getElementById('linghosCode');
+            insertIntoMain(editor, "Call >> Drop_All_Background_Threads");
+            compileCode();
+        }
+
+        function injectCooling() {
+            const editor = document.getElementById('linghosCode');
+            insertIntoMain(editor, "Call >> Ice_shield;");
+            compileCode();
+        }
+
+        /* Symbol Registry Modal */
+        function openSymbolRegistryModal() {
+            if (!currentCompiledData) return;
+            const modal = document.getElementById('inspectorModal');
+            document.getElementById('modalTitle').innerText = "📚 LIBRERIA SIMBOLI & NUOVE SKILL APPRESE";
+            
+            const symbols = currentCompiledData.symbols || [];
+            document.getElementById('modalBody').innerHTML = `
+                <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:6px;">
+                    LINGHOS apprende autonomamente qualsiasi nuovo simbolo, modulo (#include) o abilità (Call >>) immesso nel codice.
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px; max-height:45vh; overflow-y:auto;">
+                    ${symbols.map(s => `
+                        <div style="background:#020408; border:1px solid #1e293b; padding:8px; border-radius:4px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <b style="color:var(--cyan);">${s.name}</b>
+                                <span class="pill ${s.custom ? 'pill-yellow' : 'pill-green'}">${s.type} ${s.custom ? '(APPRESO)' : ''}</span>
+                            </div>
+                            <div style="font-size:0.75rem; color:#cbd5e1; margin-top:3px;">${s.description}</div>
+                            <code style="display:block; background:#0f172a; padding:3px 6px; border-radius:3px; margin-top:4px; font-size:0.7rem; color:#a5f3fc;">${s.syntax_sample}</code>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn-primary" onclick="openNewSkillModal()">+ Registra Manualmente Nuova Skill</button>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function openNewSkillModal() {
+            const modal = document.getElementById('inspectorModal');
+            document.getElementById('modalTitle').innerText = "✨ CREA E REGISTRA NUOVA SKILL COGNITIVA";
+            document.getElementById('modalBody').innerHTML = `
+                <label style="font-size:0.75rem;">Nome Skill (es. Shield_Breaker):</label>
+                <input type="text" id="newSkillName" style="background:#020408; border:1px solid #334155; padding:6px; color:#fff; border-radius:4px;">
+                
+                <label style="font-size:0.75rem; margin-top:6px;">Descrizione Funzionale:</label>
+                <input type="text" id="newSkillDesc" style="background:#020408; border:1px solid #334155; padding:6px; color:#fff; border-radius:4px;">
+                
+                <button class="btn-primary" style="margin-top:10px;" onclick="saveCustomSkill()">Salva nella Libreria e Aggiungi alla Palette</button>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        async function saveCustomSkill() {
+            const name = document.getElementById('newSkillName').value.trim();
+            const desc = document.getElementById('newSkillDesc').value.trim();
+            if (!name) return;
+
+            await fetch('/api/add_symbol', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, type: 'SKILL', description: desc, syntax_sample: 'Call >> ' + name })
+            });
+
+            // Add chip to palette
+            const palette = document.querySelector('.defense-tools');
+            const chip = document.createElement('div');
+            chip.className = 'tool-chip';
+            chip.draggable = true;
+            chip.innerText = '✨ ' + name;
+            chip.ondragstart = (ev) => handleDragStart(ev, name);
+            chip.onclick = () => { 
+                insertIntoMain(document.getElementById('linghosCode'), 'Call >> ' + name); 
+                compileCode(); 
+            };
+            palette.appendChild(chip);
+
+            closeModal();
+            compileCode();
+        }
+
+        function openNewTargetModal() {
+            const modal = document.getElementById('inspectorModal');
+            document.getElementById('modalTitle').innerText = "👤 AGGIUNGI NUOVO TARGET COGNITIVO";
+            document.getElementById('modalBody').innerHTML = `
+                <label style="font-size:0.75rem;">Nome Target (es. Persona):</label>
+                <input type="text" id="newTargetName" style="background:#020408; border:1px solid #334155; padding:6px; color:#fff; border-radius:4px;">
+
+                <label style="font-size:0.75rem; margin-top:6px;">Alias Breve (es. per):</label>
+                <input type="text" id="newTargetAlias" style="background:#020408; border:1px solid #334155; padding:6px; color:#fff; border-radius:4px;">
+
+                <label style="font-size:0.75rem; margin-top:6px;">Peso Emotivo (1-10):</label>
+                <input type="number" min="1" max="10" value="5" id="newTargetWeight" style="background:#020408; border:1px solid #334155; padding:6px; color:#fff; border-radius:4px;">
+
+                <button class="btn-primary" style="margin-top:10px;" onclick="addNewTargetToScript()">Inserisci nello Script</button>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function addNewTargetToScript() {
+            const name = document.getElementById('newTargetName').value.trim();
+            const alias = document.getElementById('newTargetAlias').value.trim() || name.substring(0,3).toLowerCase();
+            const weight = document.getElementById('newTargetWeight').value || 5;
+            if (!name) return;
+
+            const editor = document.getElementById('linghosCode');
+            let code = editor.value;
+            if (code.includes("Get:")) {
+                code = code.replace("Get:", "Get: " + name + "(" + alias + ")[" + weight + "],");
+            } else {
+                code = "Get: " + name + "(" + alias + ")[" + weight + "];\n" + code;
+            }
+            editor.value = code;
+            closeModal();
+            compileCode();
+        }
+
+        function openInfoModal(type) {
+            const modal = document.getElementById('inspectorModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            modal.style.display = 'flex';
+
+            if (type === 'architecture') {
+                title.innerText = "ℹ️ ARCHITETTURA INTEGRALE HUMOS & SPECIFICA LINGHOS";
+                body.innerHTML = `
+                    <p><b>Modello a Tre Livelli:</b></p>
+                    <ul>
+                        <li><b>Livello 1 - Hardware Biologico:</b> Encefalo, RAM (working memory), batteria chimica, BPM.</li>
+                        <li><b>Livello 2 - Software Umano:</b> Triggers emotivi, loop e bloatware comportamentale.</li>
+                        <li><b>Livello 3 - Il Nucleo (SysAdmin):</b> Coscienza pura, root agency e stanza dei comandi.</li>
+                    </ul>
+                    <p style="margin-top:8px;"><b>La Formula 1:</b> Sei un motore da Formula 1 su telaio di una bicicletta. LINGHOS fornisce il binario operativo rigoroso.</p>
+                `;
+            } else {
+                title.innerText = "ℹ️ INFORMAZIONI SUL COMPILATORE LINGHOS";
+                body.innerHTML = `
+                    <p>Il compilatore LINGHOS traduce il dialetto pseudo-formale in incident response esecutivo:</p>
+                    <ul>
+                        <li>Parsing lessicale e semantico ad anello chiuso</li>
+                        <li>Calcolo termodinamico di RAM e BPM su matrice di criticità</li>
+                        <li>Posizionamento radar dei target in base a peso e minaccia</li>
+                        <li>Generazione inversa del codice dallo stato visuale</li>
+                    </ul>
+                `;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('inspectorModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('inspectorModal');
+            if (event.target === modal) closeModal();
+        };
+
+        // Initialization & Event Binding
+        let debounceTimer = null;
+        function initApp() {
+            const editor = document.getElementById('linghosCode');
+            if (editor) {
+                editor.addEventListener('input', () => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(compileCode, 350);
+                });
+
+                editor.addEventListener('dragover', (ev) => {
+                    ev.preventDefault();
+                    editor.classList.add('drag-over');
+                });
+                editor.addEventListener('dragleave', () => editor.classList.remove('drag-over'));
+                editor.addEventListener('drop', (ev) => {
+                    ev.preventDefault();
+                    editor.classList.remove('drag-over');
+                    const toolType = ev.dataTransfer.getData("application/x-linghos-tool") || ev.dataTransfer.getData("text/plain");
+                    if (toolType) deployDefense(toolType.trim());
+                });
+            }
+
+            const arenaZone = document.getElementById('arenaDropZone');
+            if (arenaZone) {
+                arenaZone.addEventListener('dragover', handleDragOver);
+                arenaZone.addEventListener('dragleave', handleDragLeave);
+                arenaZone.addEventListener('drop', handleDrop);
+            }
+
+            const svgContainer = document.getElementById('arenaSvgContainer');
+            if (svgContainer) {
+                svgContainer.addEventListener('dragover', handleDragOver);
+                svgContainer.addEventListener('dragleave', handleDragLeave);
+                svgContainer.addEventListener('drop', handleDrop);
+            }
+
+            loadPreset('incident');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
+</body>
+</html>

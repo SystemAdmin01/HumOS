@@ -1,0 +1,16 @@
+#include <Executive_Control>
+
+Main(){
+    // Fase 1: Identificazione del sovraccarico
+    Call >> RAM_Diagnostic
+    Echo("RAM al 100%. Rilevato blocco di sistema per troppe istanze aperte.")
+
+    // Fase 2: Flush della memoria volatile
+    Call >> Drop_All_Background_Threads
+
+    // Fase 3: Isolamento della singola micro-istruzione
+    Echo("Atom Task: Aprire il documento e scrivere solo il titolo.")
+    Echo("Lock Cores on target: Esecuzione in corso.")
+
+    <<@end
+}

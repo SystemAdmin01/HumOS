@@ -1,0 +1,54 @@
+// si includono le librerie contenenti le diverse modalità (elencabili tramite il comando #include)
+
+#include Defense_Mode 
+#include Attack_Mode 
+
+// dichiarazione variabili, in questo caso i nomi dei coinvolti, poi si alloca un “peso” cioè un valore in relazione
+Get: Sara(sa)[4], Matiew(ma)[3], Giulia(giu);
+Set_CriticVal>>giu=[9]
+
+// dichiarazione per comodità di lettura che servirà fra poco		
+LP=low priority
+HP=High priority
+
+// inizio vero e proprio, questo è il corpo 
+Main(){
+
+	// qui si da inizio a una macchina virtuale di tipo AMBIENTALE a bassa priorità
+	@Start>(LP_Ambient_VM){
+		ON>sa,ma;
+	}
+
+	// qui si attiva una VM DIFENSIVA di tipo EXTERNAL in HIGH PRIORITY
+	@Start>(HP_EXT_Defense_VM){
+		ON>giu;
+	}
+
+	// chiamate a protocolli o skill personali come strumenti
+	Call >>isolation 	// serie di azioni e comandi su misura per gestire la sandbox
+	Call >>analyst 	// richiami un agente con quelle skills e strumenti
+	Call >>sniffer(IN&OUT_resources) // skill logica che rimane silente mentre acquisisce ed estrapola dati 
+
+	/SET_Lockdown_Mode{
+		Take_DOWN(all)>(giu)’s_Core  // comando di ABBATTIMENTO di TUTTI i core emotivi collegati a (giu) [ASTRATTO]
+		Close(all)>(giu)’s_bridges	  // comando di CHIUSURA di TUTTI i ponti (risorse materiali ed emotivi) [MATERIALE]
+		OVR >>(DDS,ADS) // Override dei DynamicDefenseSystems e AdaptiveDefenseSystems
+	}
+
+	// impostazione mirata d’attacco se il Codice Sorgente viene ESPOSTO
+	IF(CS_EXPOSED){
+		/SET_Attack_Mode{
+			call >>Ice_shield; 	
+			BE>worm_like
+		}
+	}
+
+	// Questo è in caso estremo SE il CS viene toccato / violato
+	IF(CS_UNLOCKED){
+		Call>> (Poison_skills){
+			all_instruments(attack)
+		}
+	}
+
+	<<@end
+}
