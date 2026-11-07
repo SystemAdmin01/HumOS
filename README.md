@@ -13,7 +13,7 @@
 [![Language: LINGHOS | Python](https://img.shields.io/badge/Language-LINGHOS%20%7C%20Python%203.11+-cyan.svg)]()
 [![Architecture: Cognitive OS](https://img.shields.io/badge/Architecture-Cognitive%20OS%20v2.1-purple.svg)]()
 [![Status: Production Ready](https://img.shields.io/badge/Status-Active%20Development-success.svg)]()
-[![Platform: macOS / Cross-platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Web-lightgrey.svg)]()
+[![Platform: macOS & Windows](https://img.shields.io/badge/Platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)]()
 
 ---
 
