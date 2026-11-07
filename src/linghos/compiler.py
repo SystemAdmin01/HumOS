@@ -11,12 +11,14 @@ from .models import (
     SymbolType, LearnedSymbol, TelemetryLog
 )
 from .kernel import HumOSKernel
+from .storage import GLOBAL_STORAGE
 
 class SymbolRegistry:
     """Dynamic symbol table that learns new symbols, skills, and macros from input."""
     def __init__(self):
         self.symbols: Dict[str, LearnedSymbol] = {}
         self._init_standard_library()
+        self._load_persisted_symbols()
 
     def _init_standard_library(self):
         standard = [
@@ -39,19 +41,55 @@ class SymbolRegistry:
             ("Lockdown_Mode", SymbolType.DIRECTIVE, "Abbattimento Core, chiusura ponti e azzeramento Fidelity", "/SET_Lockdown_Mode{ ... }"),
             ("DDS", SymbolType.DIRECTIVE, "Dynamic Defense Systems - interrupt clamp in tempo reale", "OVR >> (DDS, ADS)"),
             ("ADS", SymbolType.DIRECTIVE, "Adaptive Defense Systems - pattern recognition euristico", "OVR >> (DDS, ADS)"),
+            ("G.A.P.protocol", SymbolType.SKILL, "Gestione Attiva Paranoie - interrupt immediato su loop caotici", "Call >> G.A.P.protocol;"),
         ]
         for name, stype, desc, syntax in standard:
             self.symbols[name.lower()] = LearnedSymbol(name=name, sym_type=stype, description=desc, syntax_sample=syntax, custom=False)
 
-    def learn(self, name: str, sym_type: SymbolType, description: str = "", syntax_sample: str = "") -> LearnedSymbol:
+    def _load_persisted_symbols(self):
+        persisted = GLOBAL_STORAGE.load_custom_symbols()
+        for p in persisted:
+            name = p.get("name", "")
+            if not name:
+                continue
+            key = name.lower().strip()
+            if key not in self.symbols:
+                type_str = p.get("type", "Cognitive Skill / Tool")
+                # resolve SymbolType
+                stype = SymbolType.SKILL
+                for st in SymbolType:
+                    if st.value == type_str or st.name == type_str:
+                        stype = st
+                        break
+                self.symbols[key] = LearnedSymbol(
+                    name=name,
+                    sym_type=stype,
+                    description=p.get("description", "Simbolo custom persistito"),
+                    syntax_sample=p.get("syntax_sample", f"Call >> {name};"),
+                    custom=True
+                )
+
+    def learn(self, name: str, sym_type: SymbolType, description: str = "", syntax_sample: str = "", persist: bool = True) -> LearnedSymbol:
         key = name.lower().strip()
         if key not in self.symbols:
             desc = description or f"Simbolo appreso dinamicamente ({sym_type.value})"
             sample = syntax_sample or f"Call >> {name};"
             sym = LearnedSymbol(name=name.strip(), sym_type=sym_type, description=desc, syntax_sample=sample, custom=True)
             self.symbols[key] = sym
+            if persist:
+                GLOBAL_STORAGE.save_custom_symbols([sym.to_dict()])
             return sym
         return self.symbols[key]
+
+    def remove(self, name: str) -> bool:
+        key = name.lower().strip()
+        if key in self.symbols:
+            # Only remove custom symbols
+            if self.symbols[key].custom:
+                del self.symbols[key]
+                GLOBAL_STORAGE.remove_custom_symbol(name)
+                return True
+        return False
 
     def list_all(self) -> List[Dict[str, Any]]:
         return [sym.to_dict() for sym in self.symbols.values()]

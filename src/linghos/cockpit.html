@@ -244,6 +244,12 @@
             <div class="logo">⚡ HUMOS // LINGHOS <span>COMPILER & COGNITIVE ARENA v2.0</span></div>
         </div>
         <div class="header-actions">
+            <div class="badge-btn" onclick="event.stopPropagation(); openSaveScenarioModal()" title="Salva scenario corrente con nome">
+                <span>💾 Salva Scenario</span>
+            </div>
+            <div class="badge-btn" onclick="event.stopPropagation(); openLoadScenarioModal()" title="Apri uno scenario salvato in precedenza">
+                <span>📂 Apri Scenari</span>
+            </div>
             <div class="badge-btn" onclick="event.stopPropagation(); openSymbolRegistryModal()">
                 <span>📚 Simbologia & Nuove Skill</span>
                 <span id="symbolCountBadge" style="background:var(--cyan); color:#000; padding:1px 5px; border-radius:3px; font-weight:bold;">19</span>
@@ -263,6 +269,8 @@
                 <button onclick="loadPreset('ramflush')">RAM Flush</button>
                 <button onclick="loadPreset('panic')">Thermal Reset</button>
                 <button class="btn-primary" onclick="compileCode()">⚡ COMPILA</button>
+                <button style="border-color:var(--cyan); color:var(--cyan);" onclick="openSaveScenarioModal()">💾 Salva</button>
+                <button style="border-color:var(--yellow); color:var(--yellow);" onclick="openLoadScenarioModal()">📂 Apri</button>
             </div>
 
             <!-- Drag & Drop Defense Palette -->
@@ -511,6 +519,9 @@ Main(){
                 const data = await res.json();
                 currentCompiledData = data;
                 renderAll(data);
+                
+                // Auto-save session state debounced
+                triggerAutoSave(code, data.targets);
             } catch (err) {
                 console.error("Compile error:", err);
                 if (diagStatus) {
@@ -1008,23 +1019,204 @@ Main(){
             const symbols = currentCompiledData.symbols || [];
             document.getElementById('modalBody').innerHTML = `
                 <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:6px;">
-                    LINGHOS apprende autonomamente qualsiasi nuovo simbolo, modulo (#include) o abilità (Call >>) immesso nel codice.
+                    LINGHOS apprende autonomamente qualsiasi nuovo simbolo, modulo (#include) o abilità (Call >>) immesso nel codice. I simboli custom vengono persistiti per le prossime sessioni.
                 </div>
                 <div style="display:flex; flex-direction:column; gap:6px; max-height:45vh; overflow-y:auto;">
                     ${symbols.map(s => `
                         <div style="background:#020408; border:1px solid #1e293b; padding:8px; border-radius:4px;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <b style="color:var(--cyan);">${s.name}</b>
-                                <span class="pill ${s.custom ? 'pill-yellow' : 'pill-green'}">${s.type} ${s.custom ? '(APPRESO)' : ''}</span>
+                                <div style="display:flex; gap:6px; align-items:center;">
+                                    <span class="pill ${s.custom ? 'pill-yellow' : 'pill-green'}">${s.type} ${s.custom ? '(APPRESO)' : ''}</span>
+                                    ${s.custom ? `<button style="background:#ef444422; border:1px solid var(--red); color:var(--red); padding:2px 6px; font-size:0.65rem;" onclick="removeCustomSymbol('${s.name}')">🗑️ Elimina</button>` : ''}
+                                </div>
                             </div>
                             <div style="font-size:0.75rem; color:#cbd5e1; margin-top:3px;">${s.description}</div>
                             <code style="display:block; background:#0f172a; padding:3px 6px; border-radius:3px; margin-top:4px; font-size:0.7rem; color:#a5f3fc;">${s.syntax_sample}</code>
                         </div>
                     `).join('')}
                 </div>
-                <button class="btn-primary" onclick="openNewSkillModal()">+ Registra Manualmente Nuova Skill</button>
+                <button class="btn-primary" style="margin-top:8px;" onclick="openNewSkillModal()">+ Registra Manualmente Nuova Skill</button>
             `;
             modal.style.display = 'flex';
+        }
+
+        async function removeCustomSymbol(name) {
+            if (!confirm("Sei sicuro di voler eliminare la regola / skill '" + name + "' dalla libreria permanente?")) return;
+            try {
+                const res = await fetch('/api/remove_symbol', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name })
+                });
+                const data = await res.json();
+                if (data.symbols && currentCompiledData) {
+                    currentCompiledData.symbols = data.symbols;
+                    document.getElementById('symbolCountBadge').innerText = data.symbols.length;
+                }
+                openSymbolRegistryModal();
+                compileCode();
+            } catch (err) {
+                alert("Errore eliminazione simbolo: " + err.message);
+            }
+        }
+
+        /* Scenario Persistence System (Save, Load, Restore) */
+        function openSaveScenarioModal() {
+            const modal = document.getElementById('inspectorModal');
+            document.getElementById('modalTitle').innerText = "💾 SALVA SCENARIO COGNITIVO";
+            
+            const currentTargets = (currentCompiledData && currentCompiledData.targets) ? currentCompiledData.targets : [];
+            const targetNames = currentTargets.map(t => t.name).join(', ') || 'Nessuno';
+            const defaultName = "Scenario_" + new Date().toISOString().slice(0,10) + "_" + (currentTargets[0] ? currentTargets[0].alias : "Session");
+
+            document.getElementById('modalBody').innerHTML = `
+                <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:10px;">
+                    Salva lo scenario completo sul tuo computer. Verranno memorizzati: il codice LINGHOS, tutte le persone/target inserite, le skill e le regole personalizzate apprese.
+                </div>
+                
+                <label style="font-size:0.75rem; color:var(--cyan); font-weight:bold;">Come vuoi chiamare questo Scenario?</label>
+                <input type="text" id="scenarioSaveName" value="${defaultName}" style="background:#020408; border:1px solid var(--cyan); padding:8px; color:#fff; border-radius:4px; font-size:0.85rem; width:100%; margin-top:4px;">
+
+                <label style="font-size:0.75rem; color:#cbd5e1; margin-top:10px;">Note o contesto dell'incidente (opzionale):</label>
+                <textarea id="scenarioNotes" rows="2" style="background:#020408; border:1px solid #334155; padding:6px; color:#cbd5e1; border-radius:4px; width:100%; font-size:0.75rem; resize:none;" placeholder="Es. Gestione boundary con Sara e riunione critica..."></textarea>
+
+                <div style="background:#0f172a; border:1px solid #1e293b; padding:8px; border-radius:4px; margin-top:10px; font-size:0.72rem; color:#94a3b8;">
+                    <div>👤 <b>Persone / Target:</b> ${targetNames}</div>
+                    <div>⚡ <b>Regole / Skill Custom:</b> ${currentCompiledData ? currentCompiledData.symbols.filter(s => s.custom).length : 0} caricate</div>
+                    <div>📝 <b>Righe codice:</b> ${document.getElementById('linghosCode').value.split('\\n').length}</div>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;">
+                    <button onclick="closeModal()">Annulla</button>
+                    <button class="btn-primary" onclick="confirmSaveScenario()">Salva Scenario Permanente</button>
+                </div>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        async function confirmSaveScenario() {
+            const name = document.getElementById('scenarioSaveName').value.trim();
+            const notes = document.getElementById('scenarioNotes').value.trim();
+            if (!name) {
+                alert("Inserisci un nome valido per lo scenario.");
+                return;
+            }
+            const code = document.getElementById('linghosCode').value;
+            const targets = (currentCompiledData && currentCompiledData.targets) ? currentCompiledData.targets : [];
+
+            try {
+                const res = await fetch('/api/save_scenario', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        code: code,
+                        targets: targets,
+                        notes: notes
+                    })
+                });
+                const data = await res.json();
+                closeModal();
+                alert("✓ Scenario '" + name + "' salvato con successo! Potrai riaprirlo in qualsiasi momento dal menu '📂 Apri Scenari'.");
+            } catch (err) {
+                alert("Errore salvataggio scenario: " + err.message);
+            }
+        }
+
+        async function openLoadScenarioModal() {
+            const modal = document.getElementById('inspectorModal');
+            document.getElementById('modalTitle').innerText = "📂 SCENARI SALVATI & SESSIONI PRECEDENTI";
+
+            let scenarios = [];
+            try {
+                const res = await fetch('/api/scenarios');
+                scenarios = await res.json();
+            } catch (err) {
+                console.error("Error loading scenarios:", err);
+            }
+
+            let lastSession = null;
+            try {
+                const resLast = await fetch('/api/last_session');
+                lastSession = await resLast.json();
+            } catch (err) {}
+
+            document.getElementById('modalBody').innerHTML = `
+                <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:8px;">
+                    Seleziona uno scenario memorizzato per ricaricare istantaneamente il codice, le persone configurate e le regole difensive.
+                </div>
+
+                ${lastSession && lastSession.code ? `
+                    <div style="background:#042f2e; border:1px solid #14b8a6; padding:8px; border-radius:4px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <b style="color:#5eead4; font-size:0.8rem;">⚡ Ripristina Ultima Sessione Precedente</b>
+                            <div style="font-size:0.7rem; color:#99f6e4;">Auto-salvata: ${lastSession.saved_at || lastSession.updated_at || 'recente'}</div>
+                        </div>
+                        <button class="btn-primary" style="background:#0d9488; border-color:#5eead4;" onclick="applyScenarioData(${JSON.stringify(lastSession).replace(/"/g, '&quot;')})">Ripristina Subito</button>
+                    </div>
+                ` : ''}
+
+                <div style="display:flex; flex-direction:column; gap:6px; max-height:45vh; overflow-y:auto;">
+                    ${scenarios.length === 0 ? `
+                        <div style="padding:15px; text-align:center; color:#64748b; font-size:0.8rem; border:1px dashed #334155; border-radius:4px;">
+                            Nessuno scenario salvato finora.<br>Usa il pulsante <b>💾 Salva</b> in alto a sinistra per memorizzare la configurazione attuale!
+                        </div>
+                    ` : scenarios.map(sc => `
+                        <div style="background:#020408; border:1px solid #1e293b; padding:10px; border-radius:4px; display:flex; flex-direction:column; gap:4px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <b style="color:var(--cyan); font-size:0.85rem;">${sc.name}</b>
+                                <div style="display:flex; gap:6px;">
+                                    <button class="btn-primary" style="padding:3px 8px; font-size:0.7rem;" onclick="loadScenarioByName('${sc.safe_name}')">Apri Scenario</button>
+                                    <button style="background:#ef444422; border:1px solid var(--red); color:var(--red); padding:3px 6px; font-size:0.7rem;" onclick="deleteScenarioByName('${sc.safe_name}', '${sc.name}')">🗑️</button>
+                                </div>
+                            </div>
+                            <div style="font-size:0.7rem; color:#94a3b8;">
+                                Salvato il: ${sc.updated_at || sc.created_at || 'N/A'} | Persone: ${sc.target_count} | Regole custom: ${sc.symbol_count}
+                            </div>
+                            ${sc.notes ? `<div style="font-size:0.72rem; color:#cbd5e1; font-style:italic;">"${sc.notes}"</div>` : ''}
+                            <div style="background:#0b0f19; padding:4px 6px; border-radius:3px; font-size:0.68rem; color:#7dd3fc; white-space:pre-wrap; max-height:38px; overflow:hidden;">${sc.code_preview}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            modal.style.display = 'flex';
+        }
+
+        async function loadScenarioByName(safeName) {
+            try {
+                const res = await fetch('/api/scenario/' + safeName);
+                if (!res.ok) throw new Error("Scenario non trovato");
+                const data = await res.json();
+                applyScenarioData(data);
+            } catch (err) {
+                alert("Errore nel caricamento: " + err.message);
+            }
+        }
+
+        function applyScenarioData(data) {
+            if (!data) return;
+            const editor = document.getElementById('linghosCode');
+            if (data.code && editor) {
+                editor.value = data.code;
+            }
+            closeModal();
+            compileCode();
+            alert("✓ Scenario '" + (data.name || 'Selezionato') + "' caricato con successo!");
+        }
+
+        async function deleteScenarioByName(safeName, displayName) {
+            if (!confirm("Sei sicuro di voler eliminare definitivamente lo scenario '" + displayName + "'?")) return;
+            try {
+                await fetch('/api/delete_scenario', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ safe_name: safeName })
+                });
+                openLoadScenarioModal();
+            } catch (err) {
+                alert("Errore eliminazione: " + err.message);
+            }
         }
 
         function openNewSkillModal() {
@@ -1183,6 +1375,42 @@ Main(){
                 svgContainer.addEventListener('drop', handleDrop);
             }
 
+            restorePreviousSessionOrPreset();
+        }
+        function triggerAutoSave(code, targets) {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(async () => {
+                try {
+                    await fetch('/api/auto_save', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            code: code,
+                            targets: targets || [],
+                            timestamp: new Date().toLocaleString()
+                        })
+                    });
+                } catch (e) {}
+            }, 1000);
+        }
+
+        async function restorePreviousSessionOrPreset() {
+            try {
+                const res = await fetch('/api/last_session');
+                const last = await res.json();
+                if (last && last.code && last.code.trim().length > 0) {
+                    const editor = document.getElementById('linghosCode');
+                    if (editor) {
+                        editor.value = last.code;
+                        compileCode();
+                        const diagStatus = document.getElementById('diagStatus');
+                        if (diagStatus) {
+                            diagStatus.innerHTML = '<span style="color:var(--cyan);">✓ Sessione precedente ripristinata</span>';
+                        }
+                        return;
+                    }
+                }
+            } catch (e) {}
             loadPreset('incident');
         }
 
