@@ -1,7 +1,7 @@
 """
 LINGHOS Compiler & Bidirectional Code Generator.
-Performs lexical analysis, AST generation, semantic validation, symbol learning,
-dynamic telemetry synthesis, and inverse code generation from visual state.
+Performs quote-aware normalization, line-oriented statement analysis, semantic diagnostics,
+symbol learning, modeled telemetry synthesis, and inverse code generation from visual state.
 """
 import re
 import time
@@ -100,8 +100,8 @@ GLOBAL_REGISTRY = SymbolRegistry()
 
 class LINGHOSCompiler:
     """
-    Compiler that analyzes LINGHOS scripts, dynamically learns new symbols,
-    computes thermodynamic telemetry, and generates operational reports.
+    Line-oriented compiler that analyzes the supported LINGHOS subset, dynamically learns symbols,
+    computes modeled telemetry, and generates diagnostic reports.
     """
     def __init__(self, registry: Optional[SymbolRegistry] = None):
         self.registry = registry or GLOBAL_REGISTRY
