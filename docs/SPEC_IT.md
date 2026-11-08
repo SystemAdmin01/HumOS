@@ -27,7 +27,7 @@ Questo documento è una **specifica architetturale di riferimento**, non la dich
 
 **A livello di specifica / non ancora applicato come primitivo runtime:** `RAM.alloc()`, `RAM.free()`, `RAM.purge()`, `THREAD.*`, `BREAK_LOOP()`, `SET_VALUE()`, `TRIGGER.kill_switch()`, un watchdog G.A.P. con timeout effettivo, isolamento di processi/VM a livello di sistema operativo, acquisizione biometrica hardware e demodulazione automatica da linguaggio naturale a vettore di stato. Gli oggetti VM sono modelli applicativi, non macchine virtuali del sistema operativo. Il package non invoca direttamente un LLM esterno; gli esempi di generazione dei prompt sono integrazioni illustrative per applicazioni a valle.
 
-Il compilatore e il serializzatore sono deterministici per uno stesso input e stato runtime, nei percorsi implementati. Questo **non** garantisce risposte deterministiche o prive di allucinazioni da parte di un LLM esterno. I primitivi non implementati descritti nelle sezioni successive vanno considerati semantica proposta fino all'aggiunta del runtime e dei relativi test.
+A parità di sorgente e stato iniziale identico del runtime/registro, le decisioni grammaticali supportate e gli aggiornamenti di stato non dipendenti dal tempo seguono regole esplicite. I log con timestamp e il contenuto persistito del registro possono variare tra esecuzioni. Questo **non** garantisce risposte deterministiche o prive di allucinazioni da parte di un LLM esterno. I primitivi non implementati descritti nelle sezioni successive vanno considerati semantica proposta fino all'aggiunta del runtime e dei relativi test.
 
 ---
 
