@@ -84,7 +84,7 @@ The grammar, primitives, and language contract are documented in the [LINGHOS sp
 
 ## G.A.P. security layer
 
-**G.A.P. — Guard, Analyze, Patch** is HumOS's cognitive-security and containment protocol. It provides a vocabulary and policy layer for handling untrusted input, isolating volatile state, interrupting runaway loops, and invoking a hard-stop path when configured invariants are violated.
+**G.A.P. — Active Paranoia Management (GAP-001)** is HumOS's cognitive-security and containment protocol. It provides a vocabulary and policy layer for handling untrusted input, isolating volatile state, interrupting runaway loops, and invoking a hard-stop path when configured invariants are violated.
 
 Key concepts include:
 
