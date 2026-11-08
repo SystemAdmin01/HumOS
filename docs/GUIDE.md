@@ -27,7 +27,7 @@ LINGHOS resolves these vulnerabilities by acting as an **intermediate determinis
 
 ## 2. Ingestion Pipeline Walkthrough: From Raw Vent to LINGHOS State Vector
 
-Converting an unformatted human thought stream into a verified LINGHOS state vector proceeds across four deterministic steps.
+The following four-step workflow describes the intended integration architecture. In the current repository, the shipped compiler accepts LINGHOS source; automatic extraction of targets, urgency, RAM, or BPM from free text is not implemented.
 
 ```mermaid
 sequenceDiagram
@@ -129,20 +129,22 @@ Before routing to downstream execution, the runtime evaluates spatial and thermo
 
 ## 3. LLM Context Injection Pattern
 
-To eliminate stochastic drift and context window bloat, the compiled LINGHOS state vector is injected into the LLM system prompt via a structured schema. The model is instructed to behave strictly as an execution runtime kernel, rather than a conversational therapist.
+This section shows an optional downstream integration pattern. The repository builds compiler output and includes an illustrative prompt-injection harness, but it does not ship an LLM API client or execute external model calls. Prompt instructions cannot guarantee deterministic or hallucination-free model responses.
 
 ### 3.1 Token Optimization Metrics
 
-| Metric | Raw Natural Language Vent | Compiled LINGHOS State Vector | Improvement |
+| Metric | Raw Natural-Language Input | Serialized LINGHOS State | Evidence Status |
 | :--- | :--- | :--- | :--- |
-| **Input Token Count** | 1,480 tokens | 114 tokens | **92.3% Reduction** |
-| **Semantic Drift / Hallucination Rate** | 18.4% variance across runs | 0.0% (deterministic output schema) | **100% Elimination** |
-| **Context Window Consumption** | High (circular conversational memory) | Negligible (compact JSON state vector) | **Maximum Efficiency** |
-| **Execution Latency** | 2,850 ms (reasoning on ambiguous fluff) | 410 ms (direct function dispatch) | **85.6% Speedup** |
+| **Input token count** | Depends on sample and tokenizer | Depends on extracted fields and syntax | **Not benchmarked in this repository** |
+| **Semantic drift** | Depends on model, prompt, and context | Compiler-side parsing is rule-based for the implemented subset | **No comparative hallucination-rate study** |
+| **Context footprint** | Depends on input length | Can be shorter for compact, pre-structured state | **No fixed reduction guarantee** |
+| **End-to-end latency** | Includes model and network latency | Compiler timing is reported locally; LLM dispatch is not bundled | **No comparable latency benchmark** |
 
-### 3.2 Production Python Injection Harness
+To publish numeric performance claims, add a reproducible corpus, tokenizer/model versions, measurement scripts, run counts, and raw results. A deterministic compiler representation does not make probabilistic LLM output deterministic.
 
-The following complete, dependency-free Python implementation loads raw inputs, synthesizes LINGHOS vectors, and constructs an optimal LLM payload:
+### 3.2 Illustrative Python Integration Harness
+
+The following dependency-free example demonstrates a heuristic integration sketch. It is not a validated NLP or biometric signal processor, and its generated commands include specification-level primitives that the current runtime does not implement:
 
 ```python
 """
