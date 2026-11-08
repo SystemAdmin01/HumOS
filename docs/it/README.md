@@ -16,8 +16,8 @@ Il repository contiene sia software implementato sia documentazione architettura
 
 ## Governance e sicurezza
 
-- [Linee guida per i contributi](CONTRIBUTING.md)
-- [Politica di sicurezza](SECURITY.md)
+- [Linee guida per i contributi](../CONTRIBUTING_IT.md)
+- [Politica di sicurezza](../SECURITY_IT.md)
 - [Protocollo G.A.P.-001](../../protocols/it/GAP-001-protocol.md)
 - [Licenza](../../LICENSE.txt) — Creative Commons Attribuzione - Non Commerciale 4.0 Internazionale (CC BY-NC 4.0).
 
