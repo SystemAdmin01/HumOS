@@ -4,11 +4,11 @@
 
 **HumOS is an opinionated, low-overhead cognitive state-vector kernel for ADHD, neurodivergent workflows, and people who overthink.** It transforms unstructured inputs—including emotional vents, competing priorities, and noisy context—into compact, structured, deterministic payloads for downstream reasoning. By separating signal from noise and serializing state explicitly, HumOS is designed to reduce ambiguity, limit context drift, and make cognitive workflows easier to inspect and control.
 
-[![Architecture: Lghos v1.0](https://img.shields.io/badge/Architecture-Lghos%20v1.0-7857C5)](#architecture)
+[![Architecture Spec: 2.1.0-REV4](https://img.shields.io/badge/Architecture%20Spec-2.1.0--REV4-7857C5)](#architecture)\n[![Python Package: 1.0.0](https://img.shields.io/badge/Python%20Package-1.0.0-3776AB)](#quick-start)
 [![Security: G.A.P. Active](https://img.shields.io/badge/Security-G.A.P.%20Active-2E8B57)](#gap-security-layer)
 [![GUI: Cockpit Ready](https://img.shields.io/badge/GUI-Cockpit%20Ready-1677B8)](#humos-cockpit)
 [![Languages: EN | IT](https://img.shields.io/badge/Languages-EN%20%7C%20IT-555555)](#documentation)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
+[![License: MIT](https://img.shields.io/badge/License-CC%20BY--NC%204.0-blue.svg)](LICENSE.txt)
 
 [English documentation](docs/GUIDE.md) · [Documentazione italiana](docs/GUIDE_IT.md) · [HumOS Cockpit](src/linghos/cockpit.html) · [Examples](examples/)
 
@@ -129,7 +129,7 @@ The following matrix captures the project's **indicative design targets** for a 
 
 ### Run from source
 
-Requirements: Python 3.11+.
+Requirements: Python 3.8+ (as declared by the package metadata).
 
 ```bash
 git clone https://github.com/SystemAdmin01/HumOS.git
@@ -191,7 +191,7 @@ Contributions to the DSL, kernel, security protocols, and Cockpit are welcome. P
 
 ## License
 
-HumOS is distributed under the [MIT License](LICENSE.txt).
+HumOS is distributed under the [Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0)](LICENSE.txt). Commercial use is not permitted under the repository license.
 
 ---
 
