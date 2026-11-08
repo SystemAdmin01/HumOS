@@ -146,7 +146,10 @@ assert res['telemetry']['ice_shield'] is True
 print('Compiler verification passed.')
 "
 
-# 3. Run the regression tests\nPYTHONPATH=src python3 -m unittest discover -s tests -v\n\n# 4. Launch the local Cockpit
+# 3. Run the regression tests
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+
+# 4. Launch the local Cockpit
 python3 src/app.py
 ```
 
