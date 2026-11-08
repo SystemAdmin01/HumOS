@@ -4,8 +4,9 @@
 
 **HumOS is an opinionated, low-overhead cognitive state-vector kernel for ADHD, neurodivergent workflows, and people who overthink.** It transforms unstructured inputs—including emotional vents, competing priorities, and noisy context—into compact, structured, deterministic payloads for downstream reasoning. By separating signal from noise and serializing state explicitly, HumOS is designed to reduce ambiguity, limit context drift, and make cognitive workflows easier to inspect and control.
 
-[![Architecture Spec: 2.1.0-REV4](https://img.shields.io/badge/Architecture%20Spec-2.1.0--REV4-7857C5)](#architecture)\n[![Python Package: 1.0.0](https://img.shields.io/badge/Python%20Package-1.0.0-3776AB)](#quick-start)
-[![Security: G.A.P. Active](https://img.shields.io/badge/Security-G.A.P.%20Active-2E8B57)](#gap-security-layer)
+[![Architecture Spec: 2.1.0-REV4](https://img.shields.io/badge/Architecture%20Spec-2.1.0--REV4-7857C5)](#architecture)
+[![Python Package: 1.0.0](https://img.shields.io/badge/Python%20Package-1.0.0-3776AB)](#quick-start)
+[![Security: G.A.P. protocol](https://img.shields.io/badge/Security-G.A.P.--001-2E8B57)](#gap-security-layer)
 [![GUI: Cockpit Ready](https://img.shields.io/badge/GUI-Cockpit%20Ready-1677B8)](#humos-cockpit)
 [![Languages: EN | IT](https://img.shields.io/badge/Languages-EN%20%7C%20IT-555555)](#documentation)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-blue.svg)](LICENSE.txt)
@@ -53,7 +54,6 @@ flowchart TD
 3. **G.A.P. security layer** — **Guard, Analyze, Patch**: documents sandbox boundaries, loop-interruption policies, threat handling, and kill-switch behavior.
 4. **LLM integration and HumOS Cockpit** — passes structured state to downstream semantic workflows while the visual interface makes the model, telemetry, and defensive actions inspectable.
 
-> **Naming note:** the architecture badge uses the requested label `Lghos v1.0`; the language and compiler package in the repository are named **LINGHOS**.
 
 ## LINGHOS — the cognitive DSL
 
