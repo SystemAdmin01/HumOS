@@ -12,6 +12,7 @@ from .models import (
 )
 from .kernel import HumOSKernel
 from .storage import GLOBAL_STORAGE
+from .syntax import find_block_end, normalize_script, strip_inline_comment
 
 class SymbolRegistry:
     """Dynamic symbol table that learns new symbols, skills, and macros from input."""
@@ -117,11 +118,9 @@ class LINGHOSCompiler:
         diagnostics: List[Dict[str, str]] = []
         newly_learned: List[str] = []
 
-        # Normalization
-        clean_code = code.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"')
-        clean_code = clean_code.replace("{", "{\n").replace("}", "\n}\n")
-        clean_code = re.sub(r';\s*(?=[A-Za-z#/@<])', ';\n', clean_code)
-        lines = clean_code.split("\n")
+        # Quote-aware normalization: structural characters inside strings/comments
+        # must not be interpreted as grammar delimiters.
+        lines = normalize_script(code).split("\n")
 
         # Parsing State
         double_bottom_shield = False
@@ -135,7 +134,7 @@ class LINGHOSCompiler:
         while i < total_lines:
             raw_line = lines[i]
             line_no = i + 1
-            line = raw_line.split("//")[0].strip()
+            line = strip_inline_comment(raw_line).strip()
             
             if not line:
                 i += 1
@@ -203,18 +202,23 @@ class LINGHOSCompiler:
                     sym = self.registry.learn(vm_name, SymbolType.VM, f"Template VM custom '{vm_name}'", f"@Start>({vm_name}){{ ON>targets; }}")
                     newly_learned.append(sym.name)
 
+                block_end = find_block_end(lines, i)
+                if block_end is None:
+                    diagnostics.append({"line": line_no, "level": "ERROR", "msg": "Blocco @Start non chiuso; compilazione interrotta."})
+                    i = total_lines
+                    break
+
                 targets = []
-                while i < total_lines and "}" not in lines[i]:
-                    i += 1
-                    sub_line = lines[i].split("//")[0].strip()
+                for sub_line in lines[i + 1:block_end]:
+                    sub_line = strip_inline_comment(sub_line).strip()
                     if "ON>" in sub_line:
-                        on_targets = sub_line.split("ON>")[1].rstrip(";").strip()
+                        on_targets = sub_line.split("ON>", 1)[1].rstrip(";").strip()
                         targets = [t.strip() for t in on_targets.split(",") if t.strip()]
 
                 kernel.start_vm(vm_name, targets)
                 for t in targets:
                     target_vms[t] = vm_name
-                i += 1
+                i = block_end + 1
                 continue
 
             # 5. Call >> Skill(args)
@@ -235,9 +239,14 @@ class LINGHOSCompiler:
             # 6. /SET_Lockdown_Mode
             if "/SET_Lockdown_Mode" in line or "/SET_LOCKDOWN_MODE" in line:
                 target_to_lockdown = "ALL"
-                while i < total_lines and "}" not in lines[i]:
-                    i += 1
-                    sub_line = lines[i].split("//")[0].strip()
+                block_end = find_block_end(lines, i)
+                if block_end is None:
+                    diagnostics.append({"line": line_no, "level": "ERROR", "msg": "Blocco /SET_Lockdown_Mode non chiuso; compilazione interrotta."})
+                    i = total_lines
+                    break
+
+                for sub_line in lines[i + 1:block_end]:
+                    sub_line = strip_inline_comment(sub_line).strip()
                     if "Take_DOWN" in sub_line:
                         m_target = re.search(r'>\s*\(?([A-Za-z0-9_]+)\)?', sub_line)
                         if m_target:
@@ -252,7 +261,7 @@ class LINGHOSCompiler:
                             systems = [s.strip() for s in ovr_match.group(1).split(",")]
                             kernel.override_defenses(systems)
                 kernel.set_lockdown_mode(target_to_lockdown)
-                i += 1
+                i = block_end + 1
                 continue
 
             # 7. /SET_Attack_Mode
@@ -307,15 +316,12 @@ class LINGHOSCompiler:
                 # Check condition logic
                 is_true = kernel.evaluate_condition(cond)
                 
-                nested_lines = []
-                open_braces = line.count("{") - line.count("}")
-                while i + 1 < total_lines:
-                    i += 1
-                    sub = lines[i].split("//")[0].strip()
-                    open_braces += sub.count("{") - sub.count("}")
-                    nested_lines.append(lines[i])
-                    if open_braces <= 0:
-                        break
+                block_end = find_block_end(lines, i)
+                if block_end is None:
+                    diagnostics.append({"line": line_no, "level": "ERROR", "msg": f"Blocco IF({cond}) non chiuso; compilazione interrotta."})
+                    i = total_lines
+                    break
+                nested_lines = lines[i + 1:block_end]
 
                 if is_true:
                     kernel.log("BRANCH", "IF_TRUE", f"Condizione '{cond}' VERIFICATA -> Esecuzione blocco interno.")
@@ -330,7 +336,7 @@ class LINGHOSCompiler:
                         kernel.call_skill("Poison_skills")
                 else:
                     kernel.log("BRANCH", "IF_STANDBY", f"Clausola condizionale '{cond}' armata in standby (Core sicuro).")
-                i += 1
+                i = block_end + 1
                 continue
 
             # 12. Echo
