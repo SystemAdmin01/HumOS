@@ -51,18 +51,18 @@ flowchart TD
 
 ---
 
-## 3. Invarianti di Isolamento delle Sandbox (Architettura G.A.P.)
+## 3. Invarianti di Isolamento delle Sandbox — Obiettivi di Progetto G.A.P.
 
 > **Limiti dell'implementazione (package 1.0.0):** Questa politica descrive i controlli previsti e il modello delle minacce; non costituisce una certificazione di sicurezza. Il runtime attuale modella lo stato di target e VM, ma non fornisce isolamento VM a livello di sistema operativo, un watchdog G.A.P. per i loop o il primitivo documentato `TRIGGER.kill_switch()`. Il server Cockpit si lega al loopback, rifiuta le richieste POST browser cross-origin e limita i body JSON a 1 MiB. Non autentica utenti o processi locali. Non esporlo tramite interfacce pubbliche, reverse proxy o tunnel.
 
-Il sottosistema **G.A.P.** (**Guard, Analyze, Patch**) definisce il modello di contenimento e risposta previsto dal progetto. L'applicazione nel runtime è parziale; consulta i limiti d'implementazione qui sotto.
+Il protocollo **G.A.P.** (GAP-001, **Gestione Attiva delle Paranoie**) definisce il modello di contenimento e risposta previsto dal progetto. L'applicazione nel runtime è parziale; consulta i limiti d'implementazione qui sotto.
 
-### 3.1 Applicazione Rigorosa dei Confini di Memoria
-1. **Esposizione Zero Senza Scudo:** Quando viene rilevata la condizione `CS_EXPOSED`, il Core Vault attiva immediatamente `Ice_shield` (disaccoppiamento termico) e `Double_Bottom_Shield` (firewall semantico). Nessun dato grezzo può raggiungere il Core senza transitare attraverso il filtro semantico.
+### 3.1 Obiettivi di Contenimento (Non Garanzie del Runtime)
+1. **Confine dello Stato Protetto:** L'obiettivo progettuale è attivare `Ice_shield` e `Double_Bottom_Shield` quando viene rilevato `CS_EXPOSED`. Il runtime attuale modella alcuni stati degli scudi, ma non applica un firewall semantico non aggirabile.
 2. **Quarantena Rigida in VM:** Qualsiasi target dichiarato con punteggio di minaccia $\ge 7.0$ viene forzato all'interno di `HP_EXT_Defense_VM`. Gli è precluso qualsiasi accesso a segmenti di memoria di lavoro condivisa o thread ambientali.
-3. **Garanzia di Interruzione del Loop:** Se un ciclo associativo supera il limite di tick dichiarato (`TIMEOUT = [30]`), `G.A.P.` esegue un hard `BREAK_LOOP(X)` forzando lo stato `SET_VALUE(X, UNDEFINED)`. Qualsiasi elaborazione speculativa viene interrotta definitivamente.
+3. **Interruzione dei Loop:** Il protocollo specifica un timeout proposto e la risposta `BREAK_LOOP(X)`. Il runtime attuale non distribuisce un watchdog G.A.P. né i primitivi `BREAK_LOOP()` e `SET_VALUE()`.
 
-### 3.2 Aborto Obbligatorio dell'Esecuzione tramite `TRIGGER.kill_switch()`
+### 3.2 Comportamento di Hard-Stop Proposto — `TRIGGER.kill_switch()`
 L'obiettivo architetturale è richiedere un'interruzione immediata (`TRIGGER.kill_switch()`) al verificarsi delle seguenti condizioni critiche. Questo primitivo non è implementato dal runtime attuale:
 - **Vettore di Stato Corrotto:** L'AST contiene nodi sintatticamente non validi o invarianti contraddittori (es. asserzione di `CS_SECURE` mentre `core_connected == True` su un target in lockdown).
 - **Firma di Iniezione Rilevata:** Una variabile di input contiene sintassi di exploit attiva mirata ai tokenizer degli LLM a valle.
@@ -74,7 +74,7 @@ All'attivazione di `TRIGGER.kill_switch()`:
 2. La fedeltà verso i target viene azzerata: `Fidelity = 0%`.
 3. Il distacco emotivo è assoluto: `Take_DOWN(all) > Core`.
 4. Gli override vengono imposti: `OVR >> (DDS, ADS)`.
-5. L'host entra in cold standby a fedeltà zero fino all'autenticazione manuale dell'operatore.
+5. Lo stato modellato dell'host entra in cold standby a fedeltà zero fino all'autenticazione manuale dell'operatore.
 
 ---
 
