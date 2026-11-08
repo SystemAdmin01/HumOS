@@ -2,7 +2,7 @@
 
 ### Your mind is not broken. It deserves an explicit operating system.
 
-**HumOS is an opinionated, low-overhead cognitive state-vector kernel for ADHD, neurodivergent workflows, and people who overthink.** It transforms unstructured inputs—including emotional vents, competing priorities, and noisy context—into compact, structured, deterministic payloads for downstream reasoning. By separating signal from noise and serializing state explicitly, HumOS is designed to reduce ambiguity, limit context drift, and make cognitive workflows easier to inspect and control.
+**HumOS is an opinionated, low-overhead cognitive state-vector framework for ADHD, neurodivergent workflows, and people who overthink.** It is designed to turn unstructured inputs—including emotional vents, competing priorities, and noisy context—into compact, inspectable state through explicit LINGHOS authoring and serialization. The current Python runtime compiles a supported LINGHOS subset; automatic natural-language demodulation is an architectural goal, not a shipped feature.
 
 [![Architecture Spec: 2.1.0-REV4](https://img.shields.io/badge/Architecture%20Spec-2.1.0--REV4-7857C5)](#architecture)
 [![Python Package: 1.0.0](https://img.shields.io/badge/Python%20Package-1.0.0-3776AB)](#quick-start)
@@ -40,19 +40,21 @@ The execution path is designed to move from noisy human input to a compact, insp
 flowchart TD
     INPUT["Raw Cognitive Input / Emotional Vent"]
     FILTER["HumOS Signal-to-Noise Filter"]
-    COMPILER["Lghos Primitive Compiler"]
-    GAP["G.A.P. Threat Sandbox & Kill-Switch Layer"]
+    COMPILER["LINGHOS Primitive Compiler"]
+    GAP["G.A.P. Threat Sandbox & Kill-Switch Policy"]
     LLM["LLM Semantic Processor & Cockpit GUI"]
 
     INPUT --> FILTER --> COMPILER --> GAP --> LLM
 ```
 
+> **Implementation boundary:** This diagram describes the intended end-to-end architecture. In the current package, users author LINGHOS scripts which are parsed/compiled by the Python runtime and visualized in the Cockpit. There is no shipped natural-language/emotional-vent classifier, operating-system-level VM sandbox, enforced G.A.P. watchdog or `TRIGGER.kill_switch()` primitive, and no built-in external LLM client. See the [implementation-status matrix](docs/SPEC.md#13-implementation-status-and-conformance-boundary).
+
 ### The core layers
 
 1. **Signal-to-Noise Filter** — identifies the useful signal in unstructured input and separates it from repetition, ambiguity, and irrelevant context.
-2. **LINGHOS DSL and compiler** — expresses cognitive state through explicit primitives and a constrained grammar, then parses that representation into structured data.
-3. **G.A.P. security layer** — **Guard, Analyze, Patch**: documents sandbox boundaries, loop-interruption policies, threat handling, and kill-switch behavior.
-4. **LLM integration and HumOS Cockpit** — passes structured state to downstream semantic workflows while the visual interface makes the model, telemetry, and defensive actions inspectable.
+2. **LINGHOS DSL and compiler** — lets users express cognitive state through the implemented subset of explicit primitives and a constrained, line-oriented parser; the design specification describes a broader future language.
+3. **G.A.P. security layer** — **Guard, Analyze, Patch**: defines sandbox boundaries, loop-interruption policies, threat handling, and kill-switch behavior as a protocol model; only part of the model is currently represented in the runtime.
+4. **Downstream LLM integration and HumOS Cockpit** — the compiler output can be consumed by an external LLM integration; the repository itself does not call an LLM. The Cockpit makes modeled state, telemetry, and defensive actions inspectable.
 
 
 ## LINGHOS — the cognitive DSL
@@ -113,7 +115,7 @@ The frontend is located at [`src/linghos/cockpit.html`](src/linghos/cockpit.html
 
 ## Benchmarks: determinism and token efficiency
 
-The following matrix captures the project's **indicative design targets** for a comparable input—not independently reproduced benchmark results.
+The following matrix captures **unverified planning estimates and design targets** for a comparable input—not measurements produced by this repository. Treat the token ranges as hypotheses until benchmark data is published.
 
 | Performance Metric | Natural Language Prompting | LINGHOS Serialized Vector | System Advantage |
 | :--- | :--- | :--- | :--- |
@@ -121,7 +123,7 @@ The following matrix captures the project's **indicative design targets** for a 
 | **Parsing & Execution Latency** | Variable; interpretation can drift | Grammar-driven parsing path | **Predictable parsing; latency measurement pending** |
 | **State Vector Integrity** | Implicit state; omissions and drift are possible | Explicit, validated state representation | **Deterministic serialization** |
 | **Memory Protection** | Context can accumulate across turns | Explicit buffer lifecycle; `RAM.purge` where implemented | **Defined cleanup path, not a zero-saturation guarantee** |
-| **Loop & Overthink Control** | Retry and loop behavior often sits outside the prompt | G.A.P. thresholds and kill-switch policy | **Explicit termination path when enforcement is enabled** |
+| **Loop & Overthink Control** | Retry and loop behavior often sits outside the prompt | G.A.P. interruption policy (watchdog pending) | **Explicit policy path; hard termination is not yet implemented** |
 
 \* Token figures are estimates and depend on the input, tokenizer, and serialization format. The reduction assumes like-for-like inputs; reproduce measurements with the same tokenizer and a published benchmark corpus before treating them as performance claims. Deterministic serialization does **not** make downstream LLM inference deterministic.
 
@@ -147,7 +149,7 @@ Prebuilt macOS packages, when published, are available from [GitHub Releases](ht
 
 | Documentation | English Version | Versione Italiana | Scope |
 | :--- | :--- | :--- | :--- |
-| **Language Spec** | [`docs/SPEC.md`](docs/SPEC.md) | [`docs/SPEC_IT.md`](docs/SPEC_IT.md) | Formal syntax, primitives, and AST grammar |
+| **Language Spec** | [`docs/SPEC.md`](docs/SPEC.md) | [`docs/SPEC_IT.md`](docs/SPEC_IT.md) | Formal syntax, primitives, and implementation boundaries |
 | **Developer Guide** | [`docs/GUIDE.md`](docs/GUIDE.md) | [`docs/GUIDE_IT.md`](docs/GUIDE_IT.md) | Pipeline walkthrough, runtime concepts, and prompt-injection considerations |
 | **Code Examples** | [`examples/`](examples/) | [`examples/`](examples/) | LINGHOS scripts and Python integration examples |
 | **Contribution** | [`CONTRIBUTING.md`](CONTRIBUTING.md) | [`docs/CONTRIBUTING_IT.md`](docs/CONTRIBUTING_IT.md) | Pull-request verification and contribution conventions |
@@ -171,13 +173,17 @@ HumOS/
 ├── examples/               # LINGHOS scripts and Python examples
 ├── protocols/              # G.A.P. and cognitive safety protocols (EN / IT)
 ├── src/
+│   ├── README.md           # Python package installation and usage
+│   ├── pyproject.toml      # Package metadata (linghos 1.0.0)
 │   ├── app.py              # Local application entry point
 │   ├── HumOS_Cockpit.command
 │   └── linghos/
 │       ├── compiler.py     # LINGHOS compiler
-│       ├── parser.py       # Grammar and parsing engine
-│       ├── kernel.py       # Cognitive runtime and state management
+│       ├── parser.py       # Supported syntax interpreter
+│       ├── syntax.py       # Shared normalization and block scanning
+│       ├── kernel.py       # Cognitive runtime state model
 │       └── cockpit.html    # HumOS Cockpit GUI
+├── tests/                  # Parser/compiler regression tests
 ├── updates/                # Release notes and patches
 ├── CONTRIBUTING.md
 ├── LICENSE.txt
