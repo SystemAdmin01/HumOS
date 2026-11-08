@@ -24,7 +24,6 @@ class LINGHOSParser:
             raw_line = lines[i]
             # Strip comments that start at the beginning of the line
             line = strip_inline_comment(raw_line).strip()
-            line = raw_line.split("//")[0].strip()
             
             if not line:
                 i += 1
