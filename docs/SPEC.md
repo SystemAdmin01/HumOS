@@ -27,7 +27,7 @@ This document is the **architectural target specification**, not a claim that ev
 
 **Design-level / not yet enforced as runtime primitives:** `RAM.alloc()`, `RAM.free()`, `RAM.purge()`, `THREAD.*`, `BREAK_LOOP()`, `SET_VALUE()`, `TRIGGER.kill_switch()`, a G.A.P. watchdog with a real timeout, operating-system VM/process isolation, hardware biometric acquisition, and automatic raw-language-to-state demodulation. The VM objects are application data models, not operating-system virtual machines. The package does not itself call an external LLM; integration snippets that construct prompts are examples for downstream applications.
 
-The compiler and serializer are deterministic for a given input and runtime state where implemented. This does **not** guarantee deterministic or hallucination-free behavior from an external LLM. Treat all unimplemented primitives in the following reference as proposed semantics until their runtime implementation and tests are added.
+For identical source and identical initial runtime/registry state, the supported grammar decisions and non-time-dependent state updates are rule-based. Timestamped logs and persisted registry contents can vary between runs. This does **not** guarantee deterministic or hallucination-free behavior from an external LLM. Treat all unimplemented primitives in the following reference as proposed semantics until their runtime implementation and tests are added.
 
 ---
 
