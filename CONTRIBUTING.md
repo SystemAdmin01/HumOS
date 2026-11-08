@@ -8,25 +8,25 @@
 
 ## 1. Code of Technical Conduct & Architectural Philosophy
 
-The HumOS project enforces strict deterministic engineering standards. Unlike conventional conversational agent frameworks, HumOS and its Domain-Specific Language (LINGHOS) operate as an intermediate deterministic representation (IR) between biological cognitive volatility and downstream Large Language Model (LLM) execution kernels.
+HumOS aims for predictable, testable behavior in its implemented compiler and state model. LINGHOS can serve as a compact intermediate representation for downstream Large Language Model (LLM) applications, but the current repository does not enforce deterministic LLM inference.
 
 Every contribution—whether a parser patch, visual cockpit enhancement, or documentation revision—must strictly preserve:
-1. **Zero Hallucination Tolerance:** The compiler and runtime must never output non-deterministic or speculative state parameters.
-2. **Strict Context Budgeting:** Token overhead must be minimized at all serialization boundaries.
-3. **Formal Invariant Guarantees:** Core Self isolation (`CS_SECURE`), spatial proximity mathematics, and thermodynamic accounting (`RAM`, `BPM`) cannot be bypassed or weakened.
+1. **Deterministic compiler behavior:** For a fixed source and runtime state, supported parsing and serialization paths must be repeatable and covered by tests.
+2. **Measured context budgeting:** Token-efficiency claims must identify the tokenizer, corpus, and measurement method; do not publish unverified reduction percentages.
+3. **Explicit simulation boundaries:** State that VM, RAM, BPM, and defense values are application-level models unless real host-level enforcement or sensor integration exists.
 
 ---
 
 ## 2. Primitive Proposal Protocol (PPP)
 
-Any addition to the LINGHOS standard library, language grammar, or execution primitives must follow the **Primitive Proposal Protocol**. Unchecked keyword proliferation bloats the AST, consumes token budget, and introduces downstream reasoning ambiguities.
+Any addition to the LINGHOS language, documented primitives, or execution behavior must follow the **Primitive Proposal Protocol**. Keep proposed syntax clearly distinguished from runtime-supported commands; the current parser is line-oriented and does not construct a formal AST.
 
 ### 2.1 Criteria for Primitive Acceptance
 Before submitting a proposal for a new primitive (e.g., `MEMORY.*`, `THREAD.*`, `SHIELD.*`), the author must demonstrate that:
 1. **Non-Redundancy:** The capability cannot be synthesized using an existing primitive sequence (e.g., `RAM.alloc()` + `THREAD.spawn()`).
-2. **Context Window Efficiency:** The serialized token footprint of the primitive must not exceed **24 tokens** under standard UTF-8 Byte-Pair Encoding (BPE).
+2. **Context Window Efficiency:** Report the token footprint using a named tokenizer and version. Apply a 24-token target only when the tokenizer and measurement corpus are specified; UTF-8 encoding is not itself a BPE tokenizer.
 3. **Deterministic State Transition:** The primitive must yield a mathematically provable state change in the runtime memory model (e.g., deallocating RAM, clamping BPM, or altering threat radius).
-4. **Backward Parser Compatibility:** The addition must not introduce Lookahead conflicts ($LR(1)$ shift-reduce or reduce-reduce ambiguities) in `linghos/parser.py`.
+4. **Backward Parser Compatibility:** Add regression tests for supported parser behavior and malformed input. The current parser is hand-written and is not an LR(1) parser.
 
 ### 2.2 Formal RFC Template for Primitive Proposals
 Every primitive proposal must be submitted as an issue or pull request referencing `docs/SPEC.md` using the following technical schema:
@@ -49,10 +49,10 @@ Every Pull Request (PR) must satisfy an automated and manual verification checkl
 
 ```mermaid
 flowchart TD
-    PR[Pull Request Submitted] --> CHECK_SYNTAX[1. Strict Grammar & AST Parser Audit]
-    CHECK_SYNTAX --> CHECK_LEAK[2. Context Isolation & Leak Proof]
-    CHECK_LEAK --> CHECK_TOKEN[3. Token Overhead & Footprint Benchmark]
-    CHECK_TOKEN --> CHECK_INVARIANT[4. Thermodynamic Invariant Unit Tests]
+    PR[Pull Request Submitted] --> CHECK_SYNTAX[1. Supported Grammar & Parser Regression Tests]
+    CHECK_SYNTAX --> CHECK_LEAK[2. State Boundary Model Tests]
+    CHECK_LEAK --> CHECK_TOKEN[3. Reproducible Token Measurement]
+    CHECK_TOKEN --> CHECK_INVARIANT[4. Runtime State Model Tests]
     CHECK_INVARIANT --> PASS[All Invariants Verified -> Approved for Merge]
     
     CHECK_SYNTAX -- Failure --> REJECT[PR Rejected: Syntax Invariant Violation]
@@ -64,20 +64,20 @@ flowchart TD
 ### 3.1 Step-by-Step Verification Checklist
 
 - [ ] **1. Strict Grammar & Lexer Compliance**
-  - All `.lghos` and `.lgh` examples compile cleanly through `linghos/compiler.py` without syntax warnings.
+  - Changed and referenced examples are checked against the currently supported parser/compiler subset.
   - Semicolons, block closures (`Main() { ... }`), directives (`/SET_Lockdown_Mode`), and macro headers (`#include`) strictly follow the grammar defined in `docs/SPEC.md`.
   - No trailing whitespace or broken delimiters.
 
 - [ ] **2. Context Leak Verification (Zero Prompt Bleeding)**
-  - Variables declared in local sandboxes (`PRS_VM`, `LP_Ambient_VM`) must not leak into primary memory buffers or adjacent threads.
-  - Injected LLM system payloads must strictly contain isolated target profiles without unescaped cross-talk.
+  - Tests must verify the modeled target/VM associations and ensure no accidental cross-state mutation. Do not describe application VM objects as OS-level isolation.
+  - Prompt payload construction must escape and delimit untrusted source content; downstream LLM policy remains outside this runtime's enforcement boundary.
 
 - [ ] **3. Token Footprint Benchmark**
-  - The compiled state vector generated by the runtime must demonstrate at least an **85% reduction** in token count relative to the raw input stream.
-  - Serialization overhead must be verified via character and token profiling (`len(json.dumps(state_vector)) <= 512 bytes` for nominal workloads).
+  - Token claims must include a reproducible raw-input corpus, tokenizer name/version, serialization rules, repeated measurements, and raw results. Do not impose an 85% reduction target until a baseline benchmark has been published.
+  - Track byte size and token count as separate measurements; bytes are not tokens.
 
 - [ ] **4. Thermodynamic Invariant Unit Tests**
-  - Memory bounds test: Verify that `RAM.purge()` resets utilization to $\le 20\%$.
+  - Model test: Verify that `Call >> Drop_All_Background_Threads;` produces the documented modeled telemetry in the current implementation. Treat `RAM.purge()` as specification-only until implemented.
   - Spatial radius test: Verify that threat proximity radius satisfies $r = \max(50.0, 175.0 - (W \cdot 6.5 + C \cdot 5.5))$.
   - Defensive clamp test: Verify that `Ice_shield` prevents thermal throttling when RAM exceeds $85\%$.
 
@@ -100,10 +100,10 @@ Commit messages must strictly follow the **Conventional Commits 1.0.0** specific
 
 | Scope | Description | Permitted Types | Example |
 | :--- | :--- | :--- | :--- |
-| `lghos` | Core LINGHOS language grammar, lexical scanner, AST additions | `feat`, `fix`, `refactor` | `feat(lghos): add THREAD.suspend opcode support` |
-| `parser` | AST compilation, parsing engine, statement normalization | `fix`, `perf`, `test` | `fix(parser): resolve lookahead stall on nested IF blocks` |
+| `linghos` | LINGHOS language syntax, lexical scanner, compiler and parser behavior | `feat`, `fix`, `refactor` | `fix(linghos): add regression coverage for supported syntax` |
+| `parser` | Parsing engine, block scanning, statement normalization | `fix`, `perf`, `test` | `fix(parser): handle malformed nested IF blocks safely` |
 | `cockpit` | Web UI, interactive SVG radar canvas, HTML/JS console | `feat`, `fix`, `style` | `feat(cockpit): render active defense labels on SVG perimeter` |
-| `gap` | G.A.P. security module, recursion interrupts, kill-switch | `sec`, `fix`, `feat` | `sec(gap): enforce mandatory timeout on unclassified inputs` |
+| `gap` | G.A.P. protocol specification and supported defensive state transitions | `sec`, `fix`, `feat` | `docs(gap): clarify protocol runtime implementation boundary` |
 | `spec` | Formal documentation, language contracts, developer guides | `docs` | `docs(spec): document RAM.alloc memory invariants` |
 | `storage` | Local scenario persistence, JSON serializations, sessions | `feat`, `fix`, `test` | `feat(storage): support custom symbol de-registration` |
 
@@ -113,7 +113,7 @@ Commit messages must strictly follow the **Conventional Commits 1.0.0** specific
 ```bash
 feat(lghos): implement RAM.alloc buffer reservation syntax
 fix(parser): prevent variable leakage across multi-VM declarations
-sec(gap): force TRIGGER.kill_switch execution on heart rate breach
+fix(gap): correct documented enforcement boundary
 docs(spec): update Section 3 primitive matrix with arity contracts
 ```
 
@@ -136,7 +136,7 @@ To test contributions locally:
 git clone https://github.com/SystemAdmin01/HumOS.git
 cd HumOS
 
-# 2. Validate compiler and storage engine
+# 2. Validate compiler and storage engine (implemented subset)
 python3 -c "
 from src.linghos.compiler import LINGHOSCompiler
 from src.linghos.storage import GLOBAL_STORAGE
@@ -146,7 +146,7 @@ assert res['telemetry']['ice_shield'] is True
 print('Compiler verification passed.')
 "
 
-# 3. Launch test cockpit instance
+# 3. Run the regression tests\nPYTHONPATH=src python3 -m unittest discover -s tests -v\n\n# 4. Launch the local Cockpit
 python3 src/app.py
 ```
 
