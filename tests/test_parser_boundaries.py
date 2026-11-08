@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 
 from linghos.syntax import find_block_end, normalize_script
 from linghos.parser import LINGHOSParser
@@ -35,6 +36,21 @@ class SyntaxBoundaryTests(unittest.TestCase):
                 self.assertTrue(
                     any(item["level"] == "ERROR" for item in result["compiler_meta"]["diagnostics"])
                 )
+
+
+    def test_repository_examples_are_handled_by_compiler(self):
+        examples_dir = Path(__file__).resolve().parents[1] / "examples"
+        example_files = sorted(
+            path for path in examples_dir.rglob("*")
+            if path.is_file() and path.suffix.lower() in {".lgh", ".lghos"}
+        )
+        self.assertTrue(example_files, "No LINGHOS example scripts were found")
+
+        for path in example_files:
+            with self.subTest(example=path.name):
+                result = LINGHOSCompiler().compile(path.read_text(encoding="utf-8"))
+                self.assertIn("compiler_meta", result)
+                self.assertIn("diagnostics", result["compiler_meta"])
 
     def test_interpreter_reports_unclosed_vm_block_without_crashing(self):
         kernel = LINGHOSParser().execute_script("@Start>(PRS_VM) {\nON> target;")
