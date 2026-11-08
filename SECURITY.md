@@ -1,8 +1,8 @@
 # HumOS & LINGHOS Cognitive Security Policy
 **Document Identifier:** `SEC-POLICY-20261108-EN`  
-**Standard Status:** `Production Security Standard & Vulnerability Disclosure Protocol`  
+**Standard Status:** `Project Security Policy & Vulnerability Disclosure Guide`  
 **Classification:** `Runtime Safety Architecture & Threat Model`  
-**Security Lead:** `SystemAdmin01` (`security@humos.local`)  
+**Security Contact:** [SystemAdmin01 on GitHub](https://github.com/SystemAdmin01)  
 
 ---
 
@@ -53,7 +53,9 @@ flowchart TD
 
 ## 3. Sandbox Isolation Invariants (`G.A.P.` Architecture)
 
-The **G.A.P.** (**Guard, Analyze, Patch**) subsystem provides non-bypassable runtime isolation guarantees.
+> **Implementation boundary (package 1.0.0):** This policy describes intended controls and the threat model; it is not a security certification. The current runtime models target/VM state but does not provide operating-system VM isolation, a G.A.P. loop watchdog, or the documented `TRIGGER.kill_switch()` primitive. The Cockpit server binds to loopback, rejects cross-origin browser POST requests, and caps JSON request bodies at 1 MiB. It does not authenticate local users or processes. Do not expose it through a public interface, reverse proxy, or tunnel.
+
+The **G.A.P.** (**Guard, Analyze, Patch**) subsystem defines the project's intended containment and response model. Runtime enforcement is partial; see the implementation boundary below.
 
 ### 3.1 Hard Memory Boundary Enforcement
 1. **Zero Unshielded Exposure:** When `CS_EXPOSED` is evaluated, the Core Vault immediately engages `Ice_shield` (thermal decoupling) and `Double_Bottom_Shield` (semantic firewall). No raw data can reach the Core without passing through the semantic filter.
@@ -61,7 +63,7 @@ The **G.A.P.** (**Guard, Analyze, Patch**) subsystem provides non-bypassable run
 3. **Loop Interrupt Guarantee:** If an associative cycle exceeds the declared tick limit (`TIMEOUT = [30]`), `G.A.P.` executes a hard `BREAK_LOOP(X)` and forces `SET_VALUE(X, UNDEFINED)`. Speculative processing is permanently prohibited.
 
 ### 3.2 Mandatory Execution Abort via `TRIGGER.kill_switch()`
-The runtime mandates an immediate, non-catchable abort (`TRIGGER.kill_switch()`) under any of the following critical security conditions:
+The architectural target is to request an immediate abort (`TRIGGER.kill_switch()`) under the following critical conditions. This primitive is not implemented by the current runtime:
 - **Corrupted State Vector:** The AST contains syntactically invalid nodes or contradictory invariants (e.g., `CS_SECURE` asserted while `core_connected == True` on a lockdown target).
 - **Injection Signature Detected:** An input variable contains active exploit syntax targeting downstream LLM tokenizers.
 - **Biometric Saturation Threshold:** Autonomic heart rate breaches $130\text{ BPM}$ or working memory load reaches $95\%$.
@@ -76,11 +78,11 @@ When `TRIGGER.kill_switch()` fires:
 
 ---
 
-## 4. Threat Severity Matrix & SLA Resolution Timelines
+## 4. Threat Severity Matrix & Target Resolution Windows
 
 Vulnerabilities reported to the HumOS Security Team are classified according to the **Cognitive Security Vulnerability Scoring (CSVS)** model:
 
-| Severity Level | Threat Definition | Operational Impact | SLA Resolution |
+| Severity Level | Threat Definition | Operational Impact | Target Resolution Window* |
 | :--- | :--- | :--- | :--- |
 | **CRITICAL** | Direct breach of Core Vault (`CS_UNLOCKED`); uncatchable recursive loop causing total cognitive freeze; prompt injection leading to unauthorized external tool execution. | Complete loss of cognitive boundary; severe emotional dysregulation; arbitrary LLM dispatch. | **Patch within 24 Hours** |
 | **HIGH** | Failure of `G.A.P.` sandbox to isolate a high-threat target ($C \ge 8$); memory leak in `RAM.alloc()` causing gradual resource starvation; failure of `Ice_shield` to damp thermal throttling. | Working memory saturation ($>85\%$); acute anxiety trigger leakage; loss of task focus. | **Patch within 72 Hours** |
@@ -91,20 +93,22 @@ Vulnerabilities reported to the HumOS Security Team are classified according to 
 
 ## 5. Vulnerability Disclosure & Reporting Protocol
 
-We practice structured, responsible disclosure. Do **not** disclose cognitive vulnerabilities publicly on issue trackers or social platforms before a patch is published.
+We practice structured, responsible disclosure. Do **not** disclose vulnerabilities publicly before coordinating with the maintainer. Response times are not currently guaranteed by a formal SLA.
 
 ### 5.1 Disclosure Steps
-1. **Report Submission:** Encrypt your vulnerability report and dispatch it to `security@humos.local` (or via GitHub Private Vulnerability Reporting at `https://github.com/SystemAdmin01/HumOS/security/advisories`).
+1. **Report Submission:** Use [GitHub Private Vulnerability Reporting](https://github.com/SystemAdmin01/HumOS/security/advisories) if it is enabled for the repository. Otherwise, contact the maintainer through the [GitHub profile](https://github.com/SystemAdmin01). Do not send reports to the placeholder address `security@humos.local`.
 2. **Payload Submission Format:**
    - Detailed description of the cognitive vulnerability vector.
    - Minimal Reproducible Example (MRE) written in `.lghos` syntax demonstrating the exploit.
    - Raw input stream that bypasses demodulation or triggers runaway recursion.
    - Observed telemetry state vs expected invariant behavior.
-3. **Triaging & Confirmation:** The security team confirms receipt within **12 hours** and provides an initial severity assessment within **24 hours**.
-4. **Embargo Period:** A standard **30-day embargo** applies from the date of confirmed triage while the patch is developed and verified across unit suites.
+3. **Triaging & Confirmation:** The maintainer will acknowledge and assess reports as availability permits; no acknowledgement or remediation time is guaranteed.
+4. **Embargo Period:** Coordinate any disclosure timeline with the maintainer; do not assume a fixed embargo period.
 5. **Public Advisory & Credit:** Upon release of the patch release, a formal security advisory (`SEC-ADV-YYYYMMDD-XX`) is published, crediting the security researcher.
 
 ---
 
-*Authored and verified under the HumOS Specification Group.*  
+**Resolution windows above are planning targets, not contractual SLAs or guaranteed response times.*
+
+*Maintained by SystemAdmin01.*  
 *Official Repository:* [https://github.com/SystemAdmin01/HumOS](https://github.com/SystemAdmin01/HumOS)
