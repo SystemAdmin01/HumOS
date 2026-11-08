@@ -2,6 +2,7 @@ import unittest
 
 from linghos.syntax import find_block_end, normalize_script
 from linghos.parser import LINGHOSParser
+from linghos.compiler import LINGHOSCompiler
 
 
 class SyntaxBoundaryTests(unittest.TestCase):
@@ -19,6 +20,21 @@ class SyntaxBoundaryTests(unittest.TestCase):
 
     def test_unclosed_block_returns_none(self):
         self.assertIsNone(find_block_end(["@Start>(PRS_VM)", "{", "ON> x;"], 0))
+
+
+    def test_compiler_reports_unclosed_blocks_without_crashing(self):
+        compiler = LINGHOSCompiler()
+        malformed_scripts = [
+            "@Start>(PRS_VM) {\nON> target;",
+            "/SET_Lockdown_Mode {\nTake_DOWN(all) > target;",
+            "IF(CS_EXPOSED) {\nCall >> Ice_shield;",
+        ]
+        for source in malformed_scripts:
+            with self.subTest(source=source):
+                result = compiler.compile(source)
+                self.assertTrue(
+                    any(item["level"] == "ERROR" for item in result["compiler_meta"]["diagnostics"])
+                )
 
     def test_interpreter_reports_unclosed_vm_block_without_crashing(self):
         kernel = LINGHOSParser().execute_script("@Start>(PRS_VM) {\nON> target;")
