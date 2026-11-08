@@ -16,8 +16,8 @@ This repository contains both implemented software and evolving architectural do
 
 ## Governance and security
 
-- [Contribution guidelines](CONTRIBUTING.md)
-- [Security policy](SECURITY.md)
+- [Contribution guidelines](../../CONTRIBUTING.md)
+- [Security policy](../../SECURITY.md)
 - [G.A.P.-001 protocol](../../protocols/en/GAP-001-protocol.md)
 - [License](../../LICENSE.txt) — Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0).
 
