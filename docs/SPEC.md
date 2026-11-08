@@ -12,12 +12,10 @@
 LINGHOS (**Language for Interfacing Neurodivergent Gestalt Human Operating Systems**) is an **Opinionated Personal Cognitive Syntax**. It is a deterministic, high-throughput Domain-Specific Language (DSL) architected specifically to map volatile, unstructured, neurodivergent internal states (ADHD hyper-arousal, cognitive overload, emotional dysregulation, and associative loop cascades) into discrete, verifiable state vectors.
 
 ### 1.2 Core Mission & Operational Mechanics
-Traditional emotional expression and subjective journaling generate severe signal loss when interfaced with computational systems and Large Language Models (LLMs):
-- **Token Inflation:** Unstructured emotional venting consumes excessive context window capacity with repetitive, circular tokens.
-- **Semantic Ambiguity:** Subjective prose induces stochastic drift and hallucinations in downstream LLM reasoning engines.
-- **Latency & Thermal Throttling:** Unstructured mental feedback loops consume cognitive working memory without convergence.
 
-LINGHOS functions as an abstraction barrier between biological neuro-chemistry and deterministic cognitive execution. By enforcing strict lexical tokens, boundary declarations (`Sandboxes`), and thermodynamic resource accounting (`RAM`, `BPM`, `CS State`), LINGHOS strips conversational and emotional noise down to raw semantic payloads. The resulting state vectors enable zero-hallucination semantic parsing, verifiable state-transition tracking, and deterministic instruction execution.
+Unstructured cognitive input can be difficult to inspect and reuse in computational workflows. Repetition, missing context, and ambiguous references may increase prompt size or make downstream interpretation less predictable. These are design motivations for HumOS, not measured claims about all natural-language prompts or all LLMs.
+
+LINGHOS is designed to provide an explicit representation layer: users can name targets, assign modeled attributes, and describe supported actions with a compact DSL. This can make the resulting state easier to inspect and pass to another application. The current package does not automatically extract that state from free text, and structured input does not guarantee zero hallucinations or deterministic behavior from an external LLM.
 
 ---
 
@@ -35,7 +33,7 @@ The compiler and serializer are deterministic for a given input and runtime stat
 
 ## 2. Processing Pipeline Mechanics
 
-The HumOS runtime processes cognitive inputs across a deterministic 4-stage pipeline. Every transformation step adheres to an explicit structural contract.
+The diagram below describes the intended reference architecture, not the execution path shipped in the current package. See section 1.3 for the implemented components.
 
 ```mermaid
 flowchart TD
@@ -49,19 +47,19 @@ flowchart TD
     end
 
     subgraph Stage3["Stage 3: Compilation & State Synthesis"]
-        COMP["LINGHOS AST Compiler & Lexer<br/>(Symbol Validation, Proximity Matrix)"]
+        COMP["LINGHOS Compiler / State Serialization<br/>(Reference Design)"]
         STATE_CHECK{"Loop / Panic<br/>Detected?"}
         AST_GEN["Target Vector Matrix<br/>+ Thermodynamic Telemetry Engine"]
     end
 
     subgraph Stage4["Stage 4: Execution Engine"]
-        LLM["Deterministic Execution Backend<br/>(LLM Semantic Interpreter / Action Dispatch)"]
+        LLM["Optional External LLM Consumer<br/>(Probabilistic Inference / Application Actions)"]
     end
 
     subgraph TrapRouting["Exception & Interrupt Subsystems"]
-        GAP["G.A.P. Sandbox Subsystem<br/>(Guard, Analyze, Patch)"]
-        KILL["Emergency Abort Subsystem<br/>(TRIGGER.kill_switch - Hardware Clamp)"]
-        CS_LOCK["Core Vault Zero-Fidelity Clamp<br/>[CS_SECURE Enforced]"]
+        GAP["G.A.P.-001 Protocol<br/>(Active Paranoia Management)"]
+        KILL["Proposed Hard-Stop Path<br/>(Not Implemented in Current Runtime)"]
+        CS_LOCK["Proposed Core-State Response<br/>[Design Target]"]
     end
 
     RAW --> FILT
@@ -315,14 +313,12 @@ flowchart TD
 
 ### 3.3 Security & Interception Layer
 
-#### 3.3.1 `G.A.P.` (Guard, Analyze, Patch)
+#### 3.3.1 `G.A.P.-001` (Active Paranoia Management)
 - **Syntax Spec:**
   ```linghos
   Call >> G.A.P.protocol;
-  // Formal expansion:
-  // Guard(X)   -> Intercept volatile variable X
-  // Analyze(X) -> Detect Assoc_Engine loop condition
-  // Patch(X)   -> BREAK_LOOP(X) + SET_VALUE(X, UNDEFINED) + Sandboxing
+  // Protocol identity: Active Paranoia Management.
+  // The operations below are proposed semantics, not implemented runtime primitives.
   ```
 - **Arguments/Parameters:**
   - Implicit context or explicit target: `X` (`Variable / Threat Payload`).
