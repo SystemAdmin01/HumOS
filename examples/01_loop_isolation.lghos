@@ -1,0 +1,110 @@
+// ==============================================================================
+// HUMOS // LINGHOS REFERENCE SCRIPT 01: LOOP ISOLATION & PARANOIA INTERRUPT
+// Architecture Target: LINGHOS Runtime v2.1.0-REV4
+// Scenario: Severe Cognitive Looping / Associative Paranoia Cascade
+// Directive: Deploy G.A.P. Sandbox, Quarantine Volatile Vector, Verify Invariants
+// ==============================================================================
+
+// 1. MACRO MODULE INGESTION
+// Load standard defensive perimeter, executive regulation, and associative inspection
+#include <Defense_Mode>
+#include <Executive_Control>
+#include <Assoc_Engine>
+#include <para.md>
+#include <Lghos.command>
+
+// 2. INPUT VARIABLE BINDING & AMBIGUITY DECLARATION
+// Capture the unclassified, high-friction external stimulus
+#define raw_trigger = import > para.md
+#define X = CallTo > raw_trigger
+#define LOOP_CYCLE_LIMIT = [30]
+
+// Register concrete human target node associated with the threat cascade
+// Format: Identifier(alias)[emotional_weight_1_to_10]
+Get: AmbiguousFeedback(afb)[8], WorkplaceDirector(mgr)[7];
+
+// Set explicit threat criticality score for priority calculations (1 to 10)
+Set_CriticVal >> afb = [9]
+Set_CriticVal >> mgr = [7]
+
+// Define execution priority levels
+LP = low priority
+HP = High priority
+
+// 3. MAIN RUNTIME EXECUTION BLOCK
+Main() {
+
+    // PHASE 1: TELEMETRY RADAR ACQUISITION
+    // Intercept input signal simultaneously via analytical and contextual sniffers
+    When(analyst AND sniffer) {
+        RELEVE(X);
+        SET_FLAG(X, UNCLASSIFIED);
+        Call >> RAM.alloc(INCIDENT_QUARANTINE_BUF, 128MB);
+        Echo("TELEMETRY: Volatile variable X intercepted by RADAR layer. Flag set to UNCLASSIFIED.");
+    }
+
+    // PHASE 2: G.A.P. SANDBOX INTERCEPTION (Guard, Analyze, Patch)
+    // Monitor associative classification engine for runaway recursion
+    CPUauto {
+        Get:: X;
+        IF(Assoc_Engine.status == LOOP) {
+            // Guard: Arrest runaway cognitive clock cycles
+            BREAK_LOOP(X);
+            Echo("ALERT: Assoc_Engine runaway recursion detected on variable X. Hard loop break executed.");
+
+            // Analyze: Purge volatile orphan branches created by speculative scenarios
+            Call >> Drop_All_Background_Threads;
+            Call >> RAM_Diagnostic;
+
+            // Patch: Enforce unconditional assignment of undefined state to halt parsing
+            SET_VALUE(X, UNDEFINED);
+            Echo("PATCH: Variable X assigned state UNDEFINED. Speculative resolution terminated.");
+        }
+    }
+
+    // PHASE 3: ISOLATED RESOURCE SANDBOXING
+    // Encapsulate target inside Personal Resource Sandbox far from the Core Self
+    @Start>(PRS_VM) {
+        priority = HP;
+        ON> X, afb;
+        SET_CriticVal >> X = [3];
+        Echo("SANDBOX: X and afb isolated in PRS_VM. Threat weight clamped to baseline nominal [3].");
+    }
+
+    // PHASE 4: DEFENSE SHIELD ENGAGEMENT
+    // If Core Self telemetry indicates exposure, raise cryogenic and semantic firewalls
+    IF(CS_EXPOSED) {
+        /SET_Attack_Mode {
+            Call >> Ice_shield;
+            Call >> Double_Bottom_Shield;
+            OVR >> (DDS, ADS);
+            BE> worm_like;
+            Echo("FIREWALL: CS_EXPOSED invariant triggered. Ice_shield and Double_Bottom_Shield active.");
+        }
+    }
+
+    // PHASE 5: EMERGENCY THRESHOLD AUDIT & KILL-SWITCH EVALUATION
+    // If biological vitals breach critical limit (>125 BPM or >85% RAM load), trigger hard abort
+    IF(Hardware_Regulation.BPM > [125]) {
+        Echo("CRITICAL ERROR: Heart rate threshold breached (BPM > 125). Engaging system-wide kill-switch.");
+        /SET_Lockdown_Mode {
+            Take_DOWN(all) > (afb)'s_Core;
+            Close(all) > (afb)'s_bridges;
+            Take_DOWN(all) > (mgr)'s_Core;
+            Close(all) > (mgr)'s_bridges;
+            OVR >> (DDS, ADS);
+        }
+        Execute >> Physiological_Sigh(Rapporto_4_7_8);
+        TRIGGER.kill_switch();
+    }
+
+    // PHASE 6: CONTROLLED EXIT & PROCESS COMPLETION
+    // Return quarantined payload without re-introducing into afferent parser
+    Call >> analyst;
+    Call >> sniffer(IN&OUT_resources);
+    RETURN(X, UNDEFINED);
+
+    // Terminate session and flush scratch buffers
+    Call >> RAM.free(INCIDENT_QUARANTINE_BUF);
+    <<@end
+}

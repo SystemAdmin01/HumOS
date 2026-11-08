@@ -1,0 +1,86 @@
+// ==============================================================================
+// HUMOS // LINGHOS REFERENCE SCRIPT 02: RAM PURGE & ATOMIC FOCUS PINNING
+// Architecture Target: LINGHOS Runtime v2.1.0-REV4
+// Scenario: Cognitive Saturation / Multi-Task Working Memory Thrashing
+// Directive: Global RAM Purge, Thread Suspension, Dedicated Atomic Task Pin
+// ==============================================================================
+
+// 1. MACRO MODULE INGESTION
+// Load executive focus controls, hardware regulation, and core command pipeline
+#include <Executive_Control>
+#include <Hardware_Regulation>
+#include <Defense_Mode>
+#include <Lghos.command>
+
+// 2. TARGET DECLARATIONS & COGNITIVE LOAD METRICS
+// Register contending high-friction open task contexts
+// Format: Identifier(alias)[emotional_weight_1_to_10]
+Get: OverdueDeliverable(deliv)[9], InboxOverload(ibx)[7], SlackStream(slk)[6], PersonalFinance(fin)[5];
+
+// Configure critical severity metrics
+Set_CriticVal >> deliv = [10]
+Set_CriticVal >> ibx = [6]
+Set_CriticVal >> slk = [5]
+Set_CriticVal >> fin = [4]
+
+// Declare priority levels
+LP = low priority
+HP = High priority
+
+// 3. MAIN RUNTIME EXECUTION BLOCK
+Main() {
+
+    // PHASE 1: DIAGNOSTIC AUDIT OF WORKING MEMORY
+    // Evaluate memory saturation prior to purge
+    Call >> RAM_Diagnostic;
+    Echo("AUDIT: Mental RAM capacity at critical ceiling (estimated >= 90%). System unresponsive.");
+
+    // PHASE 2: IMMEDIATE GLOBAL MEMORY PURGE
+    // Clear all volatile associative pointers, speculative branches, and intrusive threads
+    Call >> RAM.purge();
+    Call >> Drop_All_Background_Threads;
+    Echo("PURGE: RAM.purge() executed. All uncommitted background thread allocations released to pool.");
+
+    // PHASE 3: NON-ESSENTIAL THREAD SUSPENSION
+    // Explicitly transition ambient, distracting threads into dormant swap memory
+    Call >> THREAD.suspend(TH_INBOX_POLLING);
+    Call >> THREAD.suspend(TH_SLACK_NOTIFICATIONS);
+    Call >> THREAD.suspend(TH_FINANCE_RUMINATION);
+    Echo("SUSPEND: Background threads TH_INBOX, TH_SLACK, and TH_FINANCE moved to dormant swap. Clock: 0%.");
+
+    // Enclose background targets into low-priority, quarantined VM sandboxes
+    @Start>(LP_Ambient_VM) {
+        priority = LP;
+        ON> ibx, slk, fin;
+        Echo("SANDBOX: Ambient distraction vectors pinned inside isolated LP_Ambient_VM.");
+    }
+
+    // PHASE 4: ATOMIC MEMORY ALLOCATION FOR PRIMARY FOCUS TARGET
+    // Allocate a dedicated, locked memory partition exclusively for the critical deliverable
+    Call >> RAM.alloc(ATOMIC_FOCUS_BUFFER, 256MB);
+    Echo("ALLOC: 256MB dedicated memory partition reserved under ATOMIC_FOCUS_BUFFER.");
+
+    // PHASE 5: HIGH-PRIORITY PROCESS PINNING
+    // Spawn and lock primary execution thread to a singular, non-divisible action
+    Call >> THREAD.spawn(TH_PRIMARY_ATOMIC_EXECUTION, deliv, HP);
+    @Start>(HP_EXT_Defense_VM) {
+        priority = HP;
+        ON> deliv;
+        Echo("PROCESS: Thread TH_PRIMARY_ATOMIC_EXECUTION locked in HP_EXT_Defense_VM. Cores dedicated.");
+    }
+
+    // PHASE 6: HARDWARE CLAMP & BIOFEEDBACK REGULATION
+    // Dampen autonomic arousal and prevent cognitive thermal throttling
+    Call >> Ice_shield;
+    Execute >> Physiological_Sigh(Rapporto_4_7_8);
+    Echo("HARDWARE: Autonomic feedback stabilized. Cortisol clamp engaged. Core Self nominal.");
+
+    // PHASE 7: DISPATCH ATOMIC ACTION DIRECTIVE
+    // Print explicit atomic operational target to executive console
+    Echo("ATOMIC_DIRECTIVE: Open document 'Deliverable_v1.md', write section 1.1 title only. Zero divergence.");
+
+    // PHASE 8: CONTROLLED CLEANUP & FINAL NOMINAL STATE VERIFICATION
+    Call >> RAM_Diagnostic;
+    Echo("VERIFICATION: Nominal RAM restored to 24%. Active threads: 1. Core Self: SECURE.");
+    <<@end
+}
