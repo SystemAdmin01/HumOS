@@ -8,7 +8,7 @@
 [![Security: G.A.P. Active](https://img.shields.io/badge/Security-G.A.P.%20Active-2E8B57)](#gap-security-layer)
 [![GUI: Cockpit Ready](https://img.shields.io/badge/GUI-Cockpit%20Ready-1677B8)](#humos-cockpit)
 [![Languages: EN | IT](https://img.shields.io/badge/Languages-EN%20%7C%20IT-555555)](#documentation)
-[![License: MIT](https://img.shields.io/badge/License-CC%20BY--NC%204.0-blue.svg)](LICENSE.txt)
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-blue.svg)](LICENSE.txt)
 
 [English documentation](docs/GUIDE.md) · [Documentazione italiana](docs/GUIDE_IT.md) · [HumOS Cockpit](src/linghos/cockpit.html) · [Examples](examples/)
 
