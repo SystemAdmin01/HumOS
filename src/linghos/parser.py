@@ -5,6 +5,11 @@ Parses .lgh and .linghos scripts into executable HumOS Kernel directives.
 import re
 from typing import Optional
 from .kernel import HumOSKernel
+from .syntax import find_block_end, normalize_script, strip_inline_comment
+
+ re
+from typing import Optional
+from .kernel import HumOSKernel
 
 class LINGHOSParser:
     def __init__(self, kernel: Optional[HumOSKernel] = None):
@@ -14,10 +19,7 @@ class LINGHOSParser:
         """
         Executes a complete LINGHOS script line-by-line / block-by-block.
         """
-        # Normalize typographic quotes and characters
-        normalized = code.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"')
-        normalized = normalized.replace("{", "{\n").replace("}", "\n}\n")
-        normalized = re.sub(r';\s*(?=[A-Za-z#/@<])', ';\n', normalized)
+        lines = normalize_script(code).split("\n")
         lines = normalized.split("\n")
         
         i = 0
@@ -26,6 +28,7 @@ class LINGHOSParser:
         while i < total_lines:
             raw_line = lines[i]
             # Strip comments that start at the beginning of the line
+            line = strip_inline_comment(raw_line).strip()
             line = raw_line.split("//")[0].strip()
             
             if not line:
@@ -81,17 +84,21 @@ class LINGHOSParser:
                 m = re.search(r'@Start>\s*\(\s*([A-Za-z0-9_]+)\s*\)', line)
                 vm_name = m.group(1) if m else "General_VM"
                 
-                # Look ahead for ON>targets block
+                # Locate the complete VM block before scanning its contents.
+                block_end = find_block_end(lines, i)
+                if block_end is None:
+                    self.kernel.log("ERROR", "PARSER", "Unclosed @Start block; script execution stopped.", level="ERROR")
+                    return self.kernel
+
                 targets = []
-                while i < total_lines and "}" not in lines[i]:
-                    i += 1
-                    sub_line = lines[i].split("//")[0].strip()
+                for sub_line in lines[i + 1:block_end]:
+                    sub_line = strip_inline_comment(sub_line).strip()
                     if "ON>" in sub_line:
-                        on_targets = sub_line.split("ON>")[1].rstrip(";").strip()
+                        on_targets = sub_line.split("ON>", 1)[1].rstrip(";").strip()
                         targets = [t.strip() for t in on_targets.split(",") if t.strip()]
-                
+
                 self.kernel.start_vm(vm_name, targets)
-                i += 1
+                i = block_end + 1
                 continue
 
             # 5. Direct Skill Invocation: Call >> skill(args)
@@ -106,11 +113,15 @@ class LINGHOSParser:
 
             # 6. Mode Selection: /SET_Lockdown_Mode or /SET_Attack_Mode
             if "/SET_Lockdown_Mode" in line or "/SET_LOCKDOWN_MODE" in line:
-                # Find targets or take-down references inside the block
+                # Locate the complete lockdown block before scanning its contents.
                 target_to_lockdown = "ALL"
-                while i < total_lines and "}" not in lines[i]:
-                    i += 1
-                    sub_line = lines[i].split("//")[0].strip()
+                block_end = find_block_end(lines, i)
+                if block_end is None:
+                    self.kernel.log("ERROR", "PARSER", "Unclosed /SET_Lockdown_Mode block; script execution stopped.", level="ERROR")
+                    return self.kernel
+
+                for sub_line in lines[i + 1:block_end]:
+                    sub_line = strip_inline_comment(sub_line).strip()
                     if "Take_DOWN" in sub_line:
                         m_target = re.search(r'>\s*\(?([A-Za-z0-9_]+)\)?', sub_line)
                         if m_target:
@@ -121,7 +132,7 @@ class LINGHOSParser:
                             systems = [s.strip() for s in ovr_match.group(1).split(",")]
                             self.kernel.override_defenses(systems)
                 self.kernel.set_lockdown_mode(target_to_lockdown)
-                i += 1
+                i = block_end + 1
                 continue
 
             if "/SET_Attack_Mode" in line:
@@ -175,30 +186,18 @@ class LINGHOSParser:
                 # or execute if the kernel is set to evaluate or force it
                 is_true = self.kernel.evaluate_condition(condition)
                 
-                # Check what is inside this IF block
-                nested_lines = []
-                open_braces = 0
-                if "{" in line:
-                    open_braces += 1
-                
-                while i + 1 < total_lines:
-                    i += 1
-                    sub = lines[i].split("//")[0].strip()
-                    if "{" in sub:
-                        open_braces += sub.count("{")
-                    if "}" in sub:
-                        open_braces -= sub.count("}")
-                        if open_braces <= 0:
-                            break
-                    nested_lines.append(lines[i])
+                block_end = find_block_end(lines, i)
+                if block_end is None:
+                    self.kernel.log("ERROR", "PARSER", f"Unclosed IF({condition}) block; script execution stopped.", level="ERROR")
+                    return self.kernel
+                nested_lines = lines[i + 1:block_end]
 
-                # If condition evaluates to True (or in emergency simulation mode)
                 if is_true:
                     self.kernel.log("BRANCH", "IF_TRUE", f"Condition '{condition}' is TRUE -> Executing branch.")
                     self.execute_script("\n".join(nested_lines))
                 else:
                     self.kernel.log("BRANCH", "IF_STANDBY", f"Conditional trigger '{condition}' armed in standby (Core vault is secure).")
-                i += 1
+                i = block_end + 1
                 continue
 
             # 11. Custom instructions: Echo("...")
