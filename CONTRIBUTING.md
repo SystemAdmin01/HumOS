@@ -111,9 +111,9 @@ Commit messages must strictly follow the **Conventional Commits 1.0.0** specific
 
 #### ✅ Valid Commit Messages
 ```bash
-feat(lghos): implement RAM.alloc buffer reservation syntax
+feat(linghos): implement the supported LINGHOS syntax
 fix(parser): prevent variable leakage across multi-VM declarations
-fix(gap): correct documented enforcement boundary
+fix(gap): clarify protocol runtime enforcement boundary
 docs(spec): update Section 3 primitive matrix with arity contracts
 ```
 
