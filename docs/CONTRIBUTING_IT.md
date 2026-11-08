@@ -146,7 +146,10 @@ assert res['telemetry']['ice_shield'] is True
 print('Verifica del compilatore superata con successo.')
 "
 
-# 3. Avvia l'istanza locale del Cockpit
+# 3. Esegui i test di regressione
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+
+# 4. Avvia l'istanza locale del Cockpit
 python3 src/app.py
 ```
 
