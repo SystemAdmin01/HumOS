@@ -7,10 +7,6 @@ from typing import Optional
 from .kernel import HumOSKernel
 from .syntax import find_block_end, normalize_script, strip_inline_comment
 
- re
-from typing import Optional
-from .kernel import HumOSKernel
-
 class LINGHOSParser:
     def __init__(self, kernel: Optional[HumOSKernel] = None):
         self.kernel = kernel or HumOSKernel()
@@ -20,7 +16,6 @@ class LINGHOSParser:
         Executes a complete LINGHOS script line-by-line / block-by-block.
         """
         lines = normalize_script(code).split("\n")
-        lines = normalized.split("\n")
         
         i = 0
         total_lines = len(lines)
