@@ -198,15 +198,15 @@ class LINGHOSCompiler:
             if line.startswith("@Start>"):
                 m = re.search(r'@Start>\s*\(\s*([A-Za-z0-9_]+)\s*\)', line)
                 vm_name = m.group(1) if m else "General_VM"
-                if vm_name.lower() not in self.registry.symbols:
-                    sym = self.registry.learn(vm_name, SymbolType.VM, f"Template VM custom '{vm_name}'", f"@Start>({vm_name}){{ ON>targets; }}")
-                    newly_learned.append(sym.name)
-
                 block_end = find_block_end(lines, i)
                 if block_end is None:
                     diagnostics.append({"line": line_no, "level": "ERROR", "msg": "Blocco @Start non chiuso; compilazione interrotta."})
                     i = total_lines
                     break
+
+                if vm_name.lower() not in self.registry.symbols:
+                    sym = self.registry.learn(vm_name, SymbolType.VM, f"Template VM custom '{vm_name}'", f"@Start>({vm_name}){{ ON>targets; }}")
+                    newly_learned.append(sym.name)
 
                 targets = []
                 for sub_line in lines[i + 1:block_end]:
