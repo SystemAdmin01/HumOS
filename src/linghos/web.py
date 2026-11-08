@@ -9,12 +9,14 @@ import json
 import os
 import sys
 import webbrowser
+from urllib.parse import urlsplit
 from typing import Dict, Any
 from .compiler import LINGHOSCompiler, GLOBAL_REGISTRY
 from .models import SymbolType
 from .storage import GLOBAL_STORAGE
 
 compiler_instance = LINGHOSCompiler()
+MAX_REQUEST_BYTES = 1024 * 1024
 
 def get_html_content() -> str:
     base_dir = getattr(sys, '_MEIPASS', os.path.dirname(__file__))
@@ -33,25 +35,58 @@ class HumOSHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     def _send_json(self, data: Any, status: int = 200):
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(json.dumps(data, ensure_ascii=False).encode("utf-8"))
 
+    def _is_same_origin(self) -> bool:
+        """Reject browser requests originating outside this loopback Cockpit."""
+        origin = self.headers.get("Origin")
+        if origin:
+            try:
+                parsed = urlsplit(origin)
+                if not (
+                    parsed.scheme == "http"
+                    and parsed.hostname in {"127.0.0.1", "localhost"}
+                    and parsed.port == self.server.server_port
+                    and parsed.username is None
+                    and parsed.password is None
+                ):
+                    return False
+            except ValueError:
+                return False
+
+        return self.headers.get("Sec-Fetch-Site", "").lower() != "cross-site"
+
     def _read_json(self) -> Dict[str, Any]:
-        content_length = int(self.headers.get("Content-Length", 0))
-        if content_length <= 0:
-            return {}
-        body = self.rfile.read(content_length).decode("utf-8")
         try:
-            return json.loads(body)
-        except Exception:
+            content_length = int(self.headers.get("Content-Length", "0"))
+        except (TypeError, ValueError):
+            raise ValueError("Invalid Content-Length")
+
+        if content_length < 0:
+            raise ValueError("Invalid Content-Length")
+        if content_length > MAX_REQUEST_BYTES:
+            raise OverflowError("Request body exceeds 1 MiB")
+        if content_length == 0:
             return {}
 
+        body = self.rfile.read(content_length)
+        if len(body) != content_length:
+            raise ValueError("Incomplete request body")
+
+        try:
+            data = json.loads(body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            raise ValueError("Request body must be valid UTF-8 JSON")
+        if not isinstance(data, dict):
+            raise ValueError("JSON request body must be an object")
+        return data
+
     def do_OPTIONS(self):
-        self.send_response(200)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        # The Cockpit is served from this origin and does not need CORS.
+        self.send_response(204)
         self.end_headers()
 
     def do_GET(self):
@@ -84,7 +119,24 @@ class HumOSHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_POST(self):
         path = self.path.split("?")[0]
-        data = self._read_json()
+
+        if not self._is_same_origin():
+            self._send_json({"error": "Cross-origin requests are not allowed"}, status=403)
+            return
+
+        content_type = self.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
+        if content_type != "application/json":
+            self._send_json({"error": "Content-Type must be application/json"}, status=415)
+            return
+
+        try:
+            data = self._read_json()
+        except OverflowError as exc:
+            self._send_json({"error": str(exc)}, status=413)
+            return
+        except ValueError as exc:
+            self._send_json({"error": str(exc)}, status=400)
+            return
 
         if path == "/api/compile":
             code = data.get("code", "")
