@@ -8,25 +8,25 @@
 
 ## 1. Codice di Condotta Tecnica & Filosofia Architetturale
 
-Il progetto HumOS impone standard ingegneristici deterministici rigorosi. A differenza dei framework tradizionali per agenti conversazionali, HumOS e il suo Domain-Specific Language (LINGHOS) operano come una rappresentazione intermedia deterministica (IR) tra la volatilità cognitiva biologica e i kernel di esecuzione a valle basati su Large Language Model (LLM).
+HumOS mira a un comportamento prevedibile e verificabile nel compilatore e nel modello di stato implementati. LINGHOS può fungere da rappresentazione intermedia compatta per applicazioni a valle basate su Large Language Model (LLM), ma il repository attuale non garantisce inferenze LLM deterministiche.
 
 Ogni contributo — che si tratti di una patch al parser, di un potenziamento al cockpit visuale o di una revisione documentale — deve preservare tassativamente:
-1. **Tolleranza Zero alle Allucinazioni:** Il compilatore e il runtime non devono mai generare parametri di stato speculativi o non deterministici.
-2. **Budget Rigoroso del Contesto:** L'overhead di token deve essere ridotto al minimo su tutti i confini di serializzazione.
-3. **Garanzie Formali degli Invarianti:** L'isolamento del Core Self (`CS_SECURE`), la matematica della prossimità spaziale e il bilancio termodinamico (`RAM`, `BPM`) non possono essere aggirati né indeboliti.
+1. **Comportamento deterministico del compilatore:** A parità di sorgente e stato runtime, i percorsi di parsing e serializzazione supportati devono essere ripetibili e coperti da test.
+2. **Budget del contesto misurato:** Ogni affermazione sull'efficienza in token deve indicare tokenizer, corpus e metodo di misura; non pubblicare percentuali non verificate.
+3. **Limiti espliciti della simulazione:** RAM, BPM, VM e difese sono modelli applicativi finché non esistono controlli reali sull'host o integrazioni con sensori.
 
 ---
 
 ## 2. Protocollo di Proposta Primitivi (PPP)
 
-Qualsiasi estensione alla libreria standard di LINGHOS, alla grammatica del linguaggio o ai primitivi di esecuzione deve rispettare il **Protocollo di Proposta Primitivi**. La proliferazione incontrollata di parole chiave appesantisce l'AST, consuma budget di token e introduce ambiguità nel ragionamento a valle.
+Qualsiasi estensione al linguaggio LINGHOS, ai primitivi documentati o al comportamento d'esecuzione deve rispettare il **Protocollo di Proposta Primitivi**. La sintassi proposta deve essere distinta chiaramente dai comandi supportati dal runtime; il parser attuale è line-oriented e non costruisce un AST formale.
 
 ### 2.1 Criteri di Accettazione dei Primitivi
 Prima di inviare una proposta per un nuovo primitivo (es. `MEMORY.*`, `THREAD.*`, `SHIELD.*`), l'autore deve dimostrare che:
 1. **Non Ridondanza:** La funzionalità non può essere ottenuta componendo una sequenza di primitivi già esistenti (es. `RAM.alloc()` + `THREAD.spawn()`).
-2. **Efficienza nel Context Window:** L'impronta di token serializzata del primitivo non deve superare **24 token** con codifica standard Byte-Pair Encoding (BPE) UTF-8.
+2. **Efficienza nel Context Window:** Riporta l'impronta di token indicando nome e versione del tokenizer. Applica l'obiettivo di 24 token solo quando tokenizer e corpus di misura sono specificati; UTF-8 non è di per sé un tokenizer BPE.
 3. **Transizione di Stato Deterministica:** Il primitivo deve produrre una modifica di stato matematicamente dimostrabile nel modello di memoria runtime (es. deallocare RAM, limitare i BPM o modificare il raggio di minaccia).
-4. **Compatibilità Retroattiva del Parser:** L'aggiunta non deve introdurre conflitti di lookahead (ambiguità shift-reduce o reduce-reduce $LR(1)$) in `linghos/parser.py`.
+4. **Compatibilità Retroattiva del Parser:** Aggiungi test di regressione per il comportamento supportato e per gli input malformati. Il parser attuale è scritto manualmente e non implementa LR(1).
 
 ### 2.2 Schema Formale RFC per Proposta Primitivi
 Ogni proposta deve essere presentata tramite issue o pull request con riferimento a `docs/SPEC.md` utilizzando il seguente schema tecnico:
@@ -49,10 +49,10 @@ Ogni Pull Request (PR) deve superare una checklist di verifica manuale e automat
 
 ```mermaid
 flowchart TD
-    PR[Pull Request Inviata] --> CHECK_SYNTAX[1. Audit Rigoroso di Grammatica & Parser AST]
-    CHECK_SYNTAX --> CHECK_LEAK[2. Prova di Isolamento del Contesto & Anti-Fuga]
-    CHECK_LEAK --> CHECK_TOKEN[3. Benchmark dell'Overhead & Budget Token]
-    CHECK_TOKEN --> CHECK_INVARIANT[4. Test Unitari degli Invarianti Termodinamici]
+    PR[Pull Request Inviata] --> CHECK_SYNTAX[1. Test di Regressione di Grammatica & Parser]
+    CHECK_SYNTAX --> CHECK_LEAK[2. Test dei Confini del Modello di Stato]
+    CHECK_LEAK --> CHECK_TOKEN[3. Misurazione Token Riproducibile]
+    CHECK_TOKEN --> CHECK_INVARIANT[4. Test del Modello di Stato Runtime]
     CHECK_INVARIANT --> PASS[Tutti gli Invarianti Verificati -> Approvata per Merge]
     
     CHECK_SYNTAX -- Fallimento --> REJECT[PR Respinta: Violazione Invariante Sintattico]
@@ -64,20 +64,20 @@ flowchart TD
 ### 3.1 Checklist di Verifica Passo-Passo
 
 - [ ] **1. Conformità Rigorosa a Grammatica & Lexer**
-  - Tutti gli esempi `.lghos` e `.lgh` compilano correttamente tramite `linghos/compiler.py` senza alcun avviso sintattico.
+  - Gli esempi modificati o citati vengono verificati rispetto al sottoinsieme attualmente supportato da parser e compilatore.
   - I punti e virgola, le chiusure dei blocchi (`Main() { ... }`), le direttive (`/SET_Lockdown_Mode`) e gli header macro (`#include`) seguono rigorosamente la grammatica definita in `docs/SPEC.md`.
   - Nessuno spazio bianco superfluo a fine riga o delimitatori spezzati.
 
 - [ ] **2. Verifica Isolamento Contesto (Zero Fuga di Prompt)**
-  - Le variabili dichiarate nelle sandbox locali (`PRS_VM`, `LP_Ambient_VM`) non devono riversarsi nei buffer di memoria primaria o nei thread adiacenti.
-  - I payload iniettati nel system prompt dell'LLM devono contenere unicamente profili target isolati senza contaminazioni incrociate.
+  - I test devono verificare le associazioni target/VM modellate e prevenire mutazioni accidentali tra stati. Gli oggetti VM applicativi non devono essere descritti come isolamento a livello di sistema operativo.
+  - La costruzione dei payload prompt deve delimitare i contenuti sorgente non fidati; la policy LLM a valle resta fuori dal perimetro di enforcement del runtime.
 
 - [ ] **3. Benchmark dell'Impronta di Token**
-  - Il vettore di stato compilato dal runtime deve dimostrare una **riduzione minima dell'85%** nel conteggio dei token rispetto al flusso di input grezzo.
-  - L'overhead di serializzazione deve essere verificato tramite profilazione di caratteri e token (`len(json.dumps(state_vector)) <= 512 bytes` per carichi di lavoro nominali).
+  - Le affermazioni sui token devono includere corpus grezzo riproducibile, nome/versione del tokenizer, regole di serializzazione, misurazioni ripetute e risultati grezzi. Non imporre una riduzione dell'85% finché non è stato pubblicato un benchmark di riferimento.
+  - Misura separatamente dimensione in byte e conteggio token: i byte non sono token.
 
 - [ ] **4. Test Unitari degli Invarianti Termodinamici**
-  - Test dei limiti di memoria: Verificare che `RAM.purge()` ripristini l'utilizzo a $\le 20\%$.
+  - Test del modello: verificare che `Call >> Drop_All_Background_Threads;` produca la telemetria modellata documentata nell'implementazione corrente. Considerare `RAM.purge()` come parte della specifica finché non viene implementato.
   - Test del raggio spaziale: Verificare che il raggio di prossimità rispetti l'equazione $r = \max(50.0, 175.0 - (W \cdot 6.5 + C \cdot 5.5))$.
   - Test di clamp difensivo: Verificare che `Ice_shield` prevenga il thermal throttling quando la RAM supera l'$85\%$.
 
@@ -100,7 +100,7 @@ I messaggi di commit devono aderire tassativamente alla specifica **Conventional
 
 | Ambito | Descrizione | Tipi Consentiti | Esempio |
 | :--- | :--- | :--- | :--- |
-| `lghos` | Grammatica core LINGHOS, scanner lessicale, aggiunte AST | `feat`, `fix`, `refactor` | `feat(lghos): add THREAD.suspend opcode support` |
+| `linghos` | Sintassi LINGHOS, scanner lessicale, comportamento di compilatore e parser | `feat`, `fix`, `refactor` | `feat(lghos): add THREAD.suspend opcode support` |
 | `parser` | Compilazione AST, motore di parsing, normalizzazione istruzioni | `fix`, `perf`, `test` | `fix(parser): resolve lookahead stall on nested IF blocks` |
 | `cockpit` | Interfaccia Web, canvas radar SVG interattivo, console HTML/JS | `feat`, `fix`, `style` | `feat(cockpit): render active defense labels on SVG perimeter` |
 | `gap` | Modulo di sicurezza G.A.P., interrupt ricorsivi, kill-switch | `sec`, `fix`, `feat` | `sec(gap): enforce mandatory timeout on unclassified inputs` |
