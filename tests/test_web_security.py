@@ -52,12 +52,13 @@ class CockpitHTTPSecurityTests(unittest.TestCase):
         self.assertEqual(status, 415)
 
     def test_rejects_oversized_request_body(self):
-        body = " " * (1024 * 1024 + 1)
         status, _, payload = self.request(
             "POST",
             "/api/compile",
-            body=body,
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "Content-Length": str(1024 * 1024 + 1),
+            },
         )
         self.assertEqual(status, 413)
         self.assertIn(b"1 MiB", payload)
