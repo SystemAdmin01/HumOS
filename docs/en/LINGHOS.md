@@ -351,8 +351,7 @@ LINGHOS is an actively evolving language. The following modules are currently in
   * `Route >> Sector_Beta` (Social Firewall and Mimicry)
   * `Route >> Sector_Gamma` (Cold Archive / De-emotionalised Trauma Logs)
   * `Route >> Sector_Delta` (Biological Hardware Maintenance)
-* 🔄 **LINGHOS Parser & CLI (Open Source Tooling):**  
-  Development of a software interpreter (terminal CLI) that allows users to type their LINGHOS scripts on a computer and obtain a tree-view visualisation of their active defences and variables.
+* ✅ **Existing Python tooling:** The repository includes a line-oriented parser/interpreter, compiler, and CLI commands (`run`, `repl`, `gui`, and `web`). The currently supported syntax is a subset of this language reference; it does not construct a formal AST or enforce every primitive described in the design documents. See [the implementation-status notes](../SPEC.md#13-implementation-status-and-conformance-boundary).
 
 ---
 
@@ -373,7 +372,7 @@ There is nowhere written that you must passively wait and hope to feel better.
 The **LINGHOS** language, the cognitive command syntax, and the **HumOS (Human Operating System)** framework are works of intellect created and released for the self-determination, personal sovereignty, and psychological freedom of neurodivergent and hyper-logical minds.
 
 The entire technical documentation is distributed under the licence:  
-**Creative Commons Attribution – NonCommercial – NoDerivatives 4.0 International (CC BY-NC-ND 4.0)**.
+**Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**. See the repository [LICENSE](../../LICENSE.txt) for the governing terms.
 
 ### Terms of Use:
 * 👤 **Mandatory Attribution (BY):** There is an absolute obligation to **acknowledge and cite the intellectual authorship of the original author of LINGHOS and HumOS** in every use, citation, transcription, or public fork of the code and syntax.
