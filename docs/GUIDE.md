@@ -1,355 +1,153 @@
-# HumOS & LINGHOS Developer Implementation Guide
-**Document Identifier:** `DOC-GUIDE-20261108-EN`  
-**Revision:** `2.1.0-STAGING`  
-**Classification:** `Technical Implementation Standard & Reference Integration Manual`  
-**Maintainer:** `SystemAdmin01`  
+# HumOS & LINGHOS Developer Guide
 
----
+**Package:** `linghos 1.0.0` · **Architecture specification:** `2.1.0-REV4` · **Minimum Python:** `3.8`
 
-> [!IMPORTANT]
-> **ACTIVE STAGING SPECIFICATION NOTICE**  
-> LINGHOS (**Language for Interfacing Neurodivergent Gestalt Human Operating Systems**) is an evolving, active specification. This implementation guide operates as a **live staging environment** where experimental directives, lexical expansions, dynamic AST abstractions, and compiler pipeline optimizations are developed, validated, and documented prior to formal core freezing. Implementers must adhere to the data-contract invariants defined herein to guarantee backward and forward execution compatibility.
+## 1. Purpose and scope
 
----
+HumOS applies operating-system concepts to cognitive self-management. The repository ships a Python package, the LINGHOS compiler and line-oriented interpreter, an in-memory state model, local JSON persistence, a command-line interface, and the browser-based **HumOS Cockpit GUI**.
 
-## 1. Architectural Philosophy & Developer Primitives
+This guide describes the software that is present in the repository. The wider architecture in the specification and protocol documents includes design goals that are not runtime features yet.
 
-Modern computational cognitive interfaces face a critical bottleneck: **the high-entropy nature of raw human affective streams**. When an individual experiences ADHD overwhelm, sensory hyper-arousal, or recursive cognitive looping, the resulting text stream exhibits high token redundancy, conversational fluff, and ambiguous entity relationships.
+> **Implementation boundary:** The shipped package does not automatically classify raw natural-language or emotional input, construct a formal AST, isolate operating-system processes or virtual machines, acquire biometric signals, enforce a G.A.P. loop watchdog, implement `RAM.purge()` or `TRIGGER.kill_switch()`, or call an external LLM. Runtime VM, RAM, BPM, and defense values are application-level models.
 
-Feeding raw affective prose directly into downstream reasoning systems (such as Large Language Model agents) introduces three catastrophic failure modes:
-1. **Context Window Satiation:** Multi-paragraph emotional vents consume thousands of tokens on circular restatements, exhausting working context.
-2. **Stochastic Drift & Hallucination:** Ambiguous emotional expressions cause the model's probabilistic attention mechanisms to latch onto hyper-dramatic metaphors rather than actionable state variables.
-3. **Absence of Verifiable Invariants:** Natural language prompts cannot guarantee that boundaries (e.g., disconnecting from a toxic variable or enforcing physiological clamps) are deterministically executed.
+See the [implementation-status section in the specification](SPEC.md#13-implementation-status-and-conformance-boundary).
 
-LINGHOS resolves these vulnerabilities by acting as an **intermediate deterministic representation (IR)**. It compiles human cognitive states into a formal grammar that guarantees strict encapsulation, spatial boundary math, and explicit thermodynamic metrics.
+## 2. What runs today
 
----
-
-## 2. Ingestion Pipeline Walkthrough: From Raw Vent to LINGHOS State Vector
-
-The following four-step workflow describes the intended integration architecture. In the current repository, the shipped compiler accepts LINGHOS source; automatic extraction of targets, urgency, RAM, or BPM from free text is not implemented.
+The current local execution path is:
 
 ```mermaid
-sequenceDiagram
-    autonumber
-    participant Host as Human Operator (Host)
-    participant Demod as Signal Demodulator
-    participant Compiler as LINGHOS Compiler (AST Engine)
-    participant State as Runtime Invariant Matrix
-    participant LLM as Downstream LLM Backend
+flowchart TD
+    SOURCE["User-authored LINGHOS source"]
+    NORMALIZE["Quote-aware normalization and comment handling"]
+    ENGINE["Line-oriented parser / compiler"]
+    KERNEL["HumOSKernel state model"]
+    OUTPUT["Diagnostics, logs, targets, VMs, modeled telemetry"]
+    COCKPIT["HumOS Cockpit GUI / CLI output"]
+    EXTERNAL["Optional external application or LLM integration"]
 
-    Host->>Demod: Raw Unstructured Cognitive Stream
-    Note over Demod: Regex filtering, entity extraction,<br/>weight/criticality classification
-    Demod->>Compiler: Structured Intermediary Telemetry
-    Note over Compiler: Lexical scan, AST construction,<br/>proximity radius math: r = max(50, 175 - threat_factor)
-    Compiler->>State: Evaluate Invariants (RAM, BPM, CS State)
-    State-->>Compiler: Invariants Verified (No overflow/panics)
-    Compiler->>LLM: Deterministic State Vector & LINGHOS Payload
-    Note over LLM: Zero-hallucination semantic parsing,<br/>targeted action dispatch
+    SOURCE --> NORMALIZE --> ENGINE --> KERNEL --> OUTPUT --> COCKPIT
+    OUTPUT -. "consumer-controlled handoff" .-> EXTERNAL
 ```
 
-### Step 1: Raw Capture (Ingestion)
-The operator inputs an unedited, high-entropy mental vent through a terminal, audio-transcription buffer, or input card.
+The compiler returns a structured result containing `compiler_meta`, `diagnostics`, modeled `telemetry`, target and VM records, solution steps, logs, and the symbol registry. The local Cockpit presents this result and provides visual editing and scenario workflows.
 
-```text
-"Everything is blowing up right now. Mark keeps pinging me about the Q3 infrastructure review, Sarah is complaining that the database migration failed, and I can hear my pulse in my ears. I feel like if I don't reply in five seconds my career is over. I cannot think straight and I have twelve tasks open at once."
-```
+The compiler and CLI interpreter are separate line-oriented execution paths. They share lexical normalization and block scanning, but they are not a formal AST implementation and are not guaranteed to have identical behavior for every design-language construct.
 
-### Step 2: Signal Demodulation & Entity Extraction
-The demodulator passes the raw stream through a regular-expression filter and syntactic entity classifier:
-1. **Identify Human Targets:** 
-   - `Mark` $\rightarrow$ Alias: `mrk`, Type: Interpersonal Task Source.
-   - `Sarah` $\rightarrow$ Alias: `srh`, Type: Critical Incident Source.
-2. **Assign Weight & Criticality:**
-   - `Mark`: Emotional Weight = `7/10`, Criticality = `6/10`.
-   - `Sarah`: Emotional Weight = `8/10`, Criticality = `9/10`.
-3. **Extract Physiological & RAM Markers:**
-   - "Hear pulse in ears" $\rightarrow$ `BPM >= 120`.
-   - "Twelve tasks open at once" $\rightarrow$ `RAM_LOAD >= 90%`.
+## 3. Supported language subset
 
-### Step 3: Formal LINGHOS Script Synthesis
-The extracted parameters are formatted into a deterministic `.lghos` architectural script:
+The following constructs have implementation paths in the current compiler and/or interpreter. Their exact behavior is defined by the code and regression tests, not by the broader design specification.
+
+| Construct | Current role |
+| :--- | :--- |
+| `#include` | Register a named module with the kernel / symbol registry |
+| `Get:` | Register targets, aliases, and weight values |
+| `Set_CriticVal` | Set a target's criticality in the compiler path |
+| `@Start>(...)` / `ON>` | Associate targets with an in-memory VM model |
+| `Call >>` | Invoke a supported kernel skill/state action |
+| `/SET_Lockdown_Mode` | Apply modeled lockdown state |
+| `/SET_Attack_Mode` | Set the modeled attack mode |
+| `Take_DOWN` / `Close` | Update modeled target connection and bridge state |
+| `OVR >>` | Set modeled defense overrides |
+| `BE>` | Set a modeled behavior label |
+| `IF(...)` | Evaluate a supported kernel condition and process its block |
+| `Echo(...)` | Write a message to the runtime log |
+| `<<@end` | Record the script termination marker |
+
+`Main()` acts as a source wrapper; it is not a function body compiled into an AST. Dotted design primitives such as `RAM.alloc()`, `THREAD.spawn()`, and `TRIGGER.kill_switch()` are not implemented as native runtime commands.
+
+### Minimal example
 
 ```linghos
-// ==============================================================================
-// COMPILED INGESTION VIRTUAL SCRIPT
-// ==============================================================================
-#include <Defense_Mode>
-#include <Executive_Control>
-#include <Hardware_Regulation>
-#include <Lghos.command>
-
-Get: Mark(mrk)[7], Sarah(srh)[8];
-Set_CriticVal >> mrk = [6]
-Set_CriticVal >> srh = [9]
-
-LP = low priority
-HP = High priority
+Get: Review(review)[6];
+Set_CriticVal >> review = [7];
 
 Main() {
-    // Stage 1: Purge saturated volatile RAM
-    Call >> RAM.purge();
-    Call >> Drop_All_Background_Threads;
-
-    // Stage 2: Sandboxing high-threat variables
     @Start>(HP_EXT_Defense_VM) {
-        priority = HP;
-        ON> mrk, srh;
+        ON> review;
     }
 
-    // Stage 3: Perimeter defenses
     IF(CS_EXPOSED) {
         Call >> Ice_shield;
         Call >> Double_Bottom_Shield;
-        OVR >> (DDS, ADS);
     }
 
-    // Stage 4: Hardware clamp
-    Execute >> Physiological_Sigh(Rapporto_4_7_8);
-
-    // Stage 5: Focus pinning
-    Call >> RAM.alloc(DB_MIGRATION_FOCUS, 256MB);
-    Call >> THREAD.spawn(TH_DB_TRIAGE, srh, HP);
-
+    Echo("Review isolated in the modeled defense VM");
     <<@end
 }
 ```
 
-### Step 4: Verification of State Invariants
-Before routing to downstream execution, the runtime evaluates spatial and thermodynamic equations:
-- **Spatial Threat Proximity:**
-  $$\text{threat\_factor}(srh) = (8 \cdot 6.5) + (9 \cdot 5.5) = 52.0 + 49.5 = 101.5$$
-  $$\text{radius}(srh) = \max(50.0, 175.0 - 101.5) = 73.5\text{ px}$$
-- **Thermodynamic Invariants:**
-  - `RAM %` before purge: `92%` $\rightarrow$ After `RAM.purge()`: `22%`.
-  - `BPM`: `124` $\rightarrow$ With `Ice_shield` active: clamped to nominal descent ($\approx 75$).
-  - `CS_STATE`: Verified as `SECURE` (Core Vault isolated by `Double_Bottom_Shield`).
+The numeric values and VM assignment above are inputs to HumOS's state model. They do not create an operating-system virtual machine or measure a person's physiological state.
 
----
+## 4. Run the Cockpit
 
-## 3. LLM Context Injection Pattern
+From the repository root:
 
-This section shows an optional downstream integration pattern. The repository builds compiler output and includes an illustrative prompt-injection harness, but it does not ship an LLM API client or execute external model calls. Prompt instructions cannot guarantee deterministic or hallucination-free model responses.
-
-### 3.1 Token Optimization Metrics
-
-| Metric | Raw Natural-Language Input | Serialized LINGHOS State | Evidence Status |
-| :--- | :--- | :--- | :--- |
-| **Input token count** | Depends on sample and tokenizer | Depends on extracted fields and syntax | **Not benchmarked in this repository** |
-| **Semantic drift** | Depends on model, prompt, and context | Compiler-side parsing is rule-based for the implemented subset | **No comparative hallucination-rate study** |
-| **Context footprint** | Depends on input length | Can be shorter for compact, pre-structured state | **No fixed reduction guarantee** |
-| **End-to-end latency** | Includes model and network latency | Compiler timing is reported locally; LLM dispatch is not bundled | **No comparable latency benchmark** |
-
-To publish numeric performance claims, add a reproducible corpus, tokenizer/model versions, measurement scripts, run counts, and raw results. A deterministic compiler representation does not make probabilistic LLM output deterministic.
-
-### 3.2 Illustrative Python Integration Harness
-
-The following dependency-free example demonstrates a heuristic integration sketch. It is not a validated NLP or biometric signal processor, and its generated commands include specification-level primitives that the current runtime does not implement:
-
-```python
-"""
-HumOS Engine: LINGHOS Context Injection Harness.
-Author: SystemAdmin01
-Target: Production LLM Runtime Integration
-"""
-
-import json
-import re
-from typing import Dict, Any, List
-
-
-class CognitiveDemodulator:
-    """Demodulates unstructured natural language into structured signal parameters."""
-    
-    @staticmethod
-    def extract_state(raw_text: str) -> Dict[str, Any]:
-        targets: List[Dict[str, Any]] = []
-        
-        # Detect high-arousal names or entities with heuristic urgency
-        words = re.findall(r'\b[A-Z][a-z]+\b', raw_text)
-        known_entities = [w for w in words if w not in {"I", "The", "Everything", "My", "When"}]
-        
-        for idx, ent in enumerate(known_entities[:3]):
-            targets.append({
-                "name": ent,
-                "alias": ent[:3].lower(),
-                "weight": 7 + (idx % 3),
-                "criticality": 6 + (idx % 4)
-            })
-            
-        # Detect physiological markers
-        has_pulse = bool(re.search(r'\b(pulse|heart|bpm|pounding|chest)\b', raw_text, re.I))
-        has_multitask = bool(re.search(r'\b(twelve|tasks|tabs|everything|swamped)\b', raw_text, re.I))
-        
-        return {
-            "targets": targets,
-            "estimated_bpm": 128 if has_pulse else 72,
-            "estimated_ram": 94 if has_multitask else 35,
-            "cs_exposed": has_pulse or has_multitask
-        }
-
-
-class LinghosCompilerBridge:
-    """Translates demodulated signal state into a concrete LINGHOS state vector."""
-    
-    @staticmethod
-    def compile_payload(state: Dict[str, Any]) -> Dict[str, Any]:
-        targets = state.get("targets", [])
-        
-        target_lines = [f"{t['name']}({t['alias']})[{t['weight']}]" for t in targets]
-        target_decl = f"Get: {', '.join(target_lines)};" if target_lines else "// No external targets declared."
-        
-        critic_lines = [f"Set_CriticVal >> {t['alias']} = [{t['criticality']}]" for t in targets]
-        critic_decl = "\n".join(critic_lines)
-        
-        # Calculate spatial proximity for each target
-        proximity_vectors = {}
-        for t in targets:
-            threat_factor = (t['weight'] * 6.5) + (t['criticality'] * 5.5)
-            radius = max(50.0, 175.0 - threat_factor)
-            proximity_vectors[t['alias']] = {
-                "name": t['name'],
-                "radius_px": round(radius, 1),
-                "threat_score": round((t['weight'] * 0.4) + (t['criticality'] * 0.6), 2)
-            }
-            
-        linghos_script = f"""#include <Defense_Mode>
-#include <Executive_Control>
-#include <Hardware_Regulation>
-#include <Lghos.command>
-
-{target_decl}
-{critic_decl}
-
-LP = low priority
-HP = High priority
-
-Main() {{
-    Call >> RAM.purge();
-    Call >> Drop_All_Background_Threads;
-    @Start>(HP_EXT_Defense_VM) {{
-        priority = HP;
-        ON> {', '.join(t['alias'] for t in targets)};
-    }}
-    IF(CS_EXPOSED) {{
-        Call >> Ice_shield;
-        Call >> Double_Bottom_Shield;
-        OVR >> (DDS, ADS);
-    }}
-    Execute >> Physiological_Sigh(Rapporto_4_7_8);
-    <<@end
-}}"""
-
-        return {
-            "linghos_code": linghos_script,
-            "proximity_vectors": proximity_vectors,
-            "telemetry": {
-                "ram_usage_pct": 20,  # post-purge nominal invariant
-                "heart_rate_bpm": 74,  # clamped nominal invariant
-                "cs_state": "SECURE",
-                "active_shields": ["Ice_shield", "Double_Bottom_Shield", "DDS_ADS_Override"]
-            }
-        }
-
-
-class LLMPromptInjector:
-    """Builds hardened, zero-drift system prompts from compiled LINGHOS vectors."""
-    
-    SYSTEM_TEMPLATE = """You are the HumOS Autonomous Execution Kernel.
-You do not engage in therapeutic, conversational, or emotional discourse.
-You consume compiled LINGHOS state vectors and execute deterministic, structured actions.
-
-[MANDATORY OPERATIONAL INVARIANTS]
-1. Core Self status is {cs_state}. You must maintain strict boundary isolation.
-2. Mental RAM is clamped to {ram_pct}%. Prohibit opening multi-task threads.
-3. Active shields engaged: {active_shields}.
-4. Target Proximity Matrix:
-{target_matrix}
-
-[INCOMING LINGHOS STATE VECTOR]
-```linghos
-{linghos_script}
+```bash
+python3 src/app.py
 ```
 
-[OUTPUT CONTRACT]
-You must respond exclusively with a valid JSON object matching this schema:
-{{
-  "action_status": "LOCKED | EXECUTING | CLAMPED",
-  "isolated_targets": ["target_alias_list"],
-  "atomic_immediate_task": "Concise non-divisible directive",
-  "boundary_statement": "Firm, cold message to deliver externally if contact required",
-  "system_telemetry_post_eval": {{
-    "ram_pct": {ram_pct},
-    "cs_state": "{cs_state}"
-  }}
-}}"""
+The application binds to loopback and prints the local URL, normally `http://127.0.0.1:8080`. Use the URL printed by the process if the default port is busy.
 
-    @classmethod
-    def generate_messages(cls, compiled_data: Dict[str, Any]) -> List[Dict[str, str]]:
-        telemetry = compiled_data["telemetry"]
-        prox = json.dumps(compiled_data["proximity_vectors"], indent=2)
-        
-        system_content = cls.SYSTEM_TEMPLATE.format(
-            cs_state=telemetry["cs_state"],
-            ram_pct=telemetry["ram_usage_pct"],
-            active_shields=", ".join(telemetry["active_shields"]),
-            target_matrix=prox,
-            linghos_script=compiled_data["linghos_code"]
-        )
-        
-        return [
-            {"role": "system", "content": system_content},
-            {"role": "user", "content": "EXECUTE LINGHOS DISPATCH."}
-        ]
+The browser GUI is implemented in [`src/linghos/cockpit.html`](../src/linghos/cockpit.html). It includes a LINGHOS editor, visual target/defense controls, modeled telemetry, symbol management, and scenario persistence.
 
+The local HTTP service accepts JSON requests up to 1 MiB and checks browser request origin on POST. It does not authenticate local users or processes. Keep it on loopback; do not expose it through a public network interface, reverse proxy, or tunnel.
 
-# ==============================================================================
-# EXECUTION VERIFICATION SUITE
-# ==============================================================================
-if __name__ == "__main__":
-    sample_raw_input = (
-        "Mark is spamming me about deadlines, Sarah said the migration is broken, "
-        "and my pulse is pounding. I have twelve open problems in my head right now."
-    )
-    
-    # 1. Demodulate
-    raw_state = CognitiveDemodulator.extract_state(sample_raw_input)
-    
-    # 2. Compile to LINGHOS
-    compiled = LinghosCompilerBridge.compile_payload(raw_state)
-    
-    # 3. Generate LLM Payload
-    messages = LLMPromptInjector.generate_messages(compiled)
-    
-    print("=== INJECTED LLM SYSTEM PROMPT ===")
-    print(messages[0]["content"])
-    print("\n=== PAYLOAD VALIDATION SUCCESSFUL ===")
+## 5. Use the command-line interface
+
+From the package directory:
+
+```bash
+cd src
+python3 -m linghos --help
+python3 -m linghos run ../examples/adhd_ram_flush.lgh
+python3 -m linghos repl
+python3 -m linghos gui
 ```
 
----
+The package can also be installed locally:
 
-## 4. Reference Implementation Directory Structure
-
-When authoring or integrating `.lghos` scripts into your codebase, follow this verified repository hierarchy:
-
-```text
-HumOS/
-├── docs/
-│   ├── SPEC.md                    # Core Architectural Formal Specification (EN)
-│   ├── SPEC_IT.md                 # Core Architectural Formal Specification (IT)
-│   ├── GUIDE.md                   # Developer Implementation & Injection Guide (EN)
-│   └── GUIDE_IT.md                # Developer Implementation & Injection Guide (IT)
-├── examples/
-│   ├── 01_loop_isolation.lghos    # Reference script: G.A.P. Sandbox & Paranoia Breaker
-│   ├── 02_ram_dump.lghos          # Reference script: RAM.purge() & Focus Pinning
-│   ├── adhd_ram_flush.lgh         # Standalone quick-flush utility
-│   └── incident_01.lgh            # Multi-vector defense simulation
-└── src/
-    ├── app.py                     # Execution entrypoint
-    └── linghos/                   # Compiler, Kernel, Web & Storage Modules
+```bash
+cd src
+python3 -m pip install .
 ```
 
----
+See [`src/README.md`](../src/README.md) for package-specific usage.
 
-*Authored under the HumOS Specification Group.*  
-*Official Repository:* [https://github.com/SystemAdmin01/HumOS](https://github.com/SystemAdmin01/HumOS)
+## 6. G.A.P. protocol and security boundaries
+
+The English protocol identifies GAP-001 as **Active Paranoia Management**; the Italian protocol title is **Gestione Attiva delle Paranoie**. G.A.P. describes a cognitive containment and response model. The current runtime provides modeled target/VM states and selected defense actions, but it does not implement the documented watchdog, operating-system sandbox enforcement, or hard kill-switch.
+
+Read the [Security Policy](../SECURITY.md), [Italian Security Policy](SECURITY_IT.md), and [G.A.P.-001 protocol](../protocols/en/GAP-001-protocol.md) before making security claims about the project.
+
+## 7. LLM integration and benchmarks
+
+The repository does not ship an LLM client or a complete raw-input-to-LLM pipeline. An external application may consume compiler output and choose to forward a serialized state to a model, with its own consent, privacy, validation, and safety controls.
+
+There are no reproducible token-reduction, hallucination-rate, or end-to-end latency benchmarks in this repository. Any numeric figures should be treated as unverified estimates until a public corpus, tokenizer/model versions, measurement scripts, run counts, and raw results are available. Deterministic parsing does not make downstream LLM inference deterministic.
+
+## 8. Test and build
+
+From the repository root:
+
+```bash
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+python3 -m compileall -q src tests
+```
+
+Build the Python package:
+
+```bash
+cd src
+python3 -m pip wheel . --no-deps
+```
+
+GitHub Actions runs the regression suite across the declared Python support matrix and builds the package. The local commands above are the same basic checks used for contributions.
+
+## 9. Related documentation
+
+- [Root README](../README.md) — overview and quick start.
+- [LINGHOS specification](SPEC.md) · [Specifiche LINGHOS in italiano](SPEC_IT.md).
+- [Italian developer guide](GUIDE_IT.md).
+- [English LINGHOS language notes](en/LINGHOS.md) · [Italian LINGHOS language notes](it/LINGHOS.md).
+- [Contribution guidelines](../CONTRIBUTING.md) · [Linee guida italiane](CONTRIBUTING_IT.md).
