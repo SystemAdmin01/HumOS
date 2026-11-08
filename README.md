@@ -53,7 +53,7 @@ flowchart TD
 
 1. **Signal-to-Noise Filter** — identifies the useful signal in unstructured input and separates it from repetition, ambiguity, and irrelevant context.
 2. **LINGHOS DSL and compiler** — lets users express cognitive state through the implemented subset of explicit primitives and a constrained, line-oriented parser; the design specification describes a broader future language.
-3. **G.A.P. security layer** — **Guard, Analyze, Patch**: defines sandbox boundaries, loop-interruption policies, threat handling, and kill-switch behavior as a protocol model; only part of the model is currently represented in the runtime.
+3. **G.A.P. security layer** — GAP-001 (**Active Paranoia Management**): defines sandbox boundaries, loop-interruption policies, threat handling, and proposed hard-stop behavior; only part of the model is currently represented in the runtime.
 4. **Downstream LLM integration and HumOS Cockpit** — the compiler output can be consumed by an external LLM integration; the repository itself does not call an LLM. The Cockpit makes modeled state, telemetry, and defensive actions inspectable.
 
 
