@@ -51,7 +51,7 @@ flowchart TD
 
 ### The core layers
 
-1. **Signal-to-Noise Filter** — identifies the useful signal in unstructured input and separates it from repetition, ambiguity, and irrelevant context.
+1. **Input conditioning (architectural goal)** — the intended design separates useful signal from repetition, ambiguity, and irrelevant context; an automatic natural-language filter is not shipped yet.
 2. **LINGHOS DSL and compiler** — lets users express cognitive state through the implemented subset of explicit primitives and a constrained, line-oriented parser; the design specification describes a broader future language.
 3. **G.A.P. security layer** — GAP-001 (**Active Paranoia Management**): defines sandbox boundaries, loop-interruption policies, threat handling, and proposed hard-stop behavior; only part of the model is currently represented in the runtime.
 4. **Downstream LLM integration and HumOS Cockpit** — the compiler output can be consumed by an external LLM integration; the repository itself does not call an LLM. The Cockpit makes modeled state, telemetry, and defensive actions inspectable.
@@ -84,7 +84,7 @@ The grammar, primitives, and language contract are documented in the [LINGHOS sp
 
 ## G.A.P. security layer
 
-**G.A.P. — Active Paranoia Management (GAP-001)** is HumOS's cognitive-security and containment protocol. It provides a vocabulary and policy layer for handling untrusted input, isolating volatile state, interrupting runaway loops, and invoking a hard-stop path when configured invariants are violated.
+**G.A.P. — Active Paranoia Management (GAP-001)** is HumOS's cognitive-security and containment protocol. It defines a vocabulary and policy model for untrusted input, modeled target isolation, loop-interruption responses, and a proposed hard-stop path. The current runtime does not enforce a G.A.P. watchdog or hard kill-switch.
 
 Key concepts include:
 
