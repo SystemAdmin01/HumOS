@@ -120,9 +120,9 @@ The following matrix captures **unverified planning estimates and design targets
 | Performance Metric | Natural Language Prompting | LINGHOS Serialized Vector | System Advantage |
 | :--- | :--- | :--- | :--- |
 | **Context Window Footprint** | ~650–1,200 tokens | ~90–180 tokens | **~80%–85% fewer tokens*** |
-| **Parsing & Execution Latency** | Variable; interpretation can drift | Grammar-driven parsing path | **Predictable parsing; latency measurement pending** |
-| **State Vector Integrity** | Implicit state; omissions and drift are possible | Explicit, validated state representation | **Deterministic serialization** |
-| **Memory Protection** | Context can accumulate across turns | Explicit buffer lifecycle; `RAM.purge` where implemented | **Defined cleanup path, not a zero-saturation guarantee** |
+| **Parsing & Execution Latency** | Variable; interpretation can drift | Rule-based, line-oriented parser | **Repeatable rules; latency measurement pending** |
+| **State Vector Integrity** | Implicit state; omissions and drift are possible | Explicit target/state fields with subset diagnostics | **Inspectable structure; full schema validation is pending** |
+| **Memory Protection** | Context can accumulate across turns | Modeled RAM accounting; `RAM.purge()` remains specification-only | **Inspectable resource model; no hard memory reset yet** |
 | **Loop & Overthink Control** | Retry and loop behavior often sits outside the prompt | G.A.P. interruption policy (watchdog pending) | **Explicit policy path; hard termination is not yet implemented** |
 
 \* Token figures are estimates and depend on the input, tokenizer, and serialization format. The reduction assumes like-for-like inputs; reproduce measurements with the same tokenizer and a published benchmark corpus before treating them as performance claims. Deterministic serialization does **not** make downstream LLM inference deterministic.
