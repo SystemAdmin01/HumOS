@@ -27,7 +27,7 @@ LINGHOS risolve queste criticità operando come una **rappresentazione determini
 
 ## 2. Guida della Pipeline di Ingestione: Dallo Sfogo Grezzo al Vettore di Stato LINGHOS
 
-La conversione di un flusso di pensieri umani non formattato in un vettore di stato verificato LINGHOS si articola in quattro passaggi deterministici.
+Il seguente workflow in quattro passaggi descrive l'architettura d'integrazione prevista. Nel repository attuale, il compilatore distribuito accetta codice sorgente LINGHOS: l'estrazione automatica di target, urgenza, RAM o BPM dal testo libero non è implementata.
 
 ```mermaid
 sequenceDiagram
@@ -129,20 +129,22 @@ Prima di inviare il payload all'esecuzione a valle, il runtime valuta le equazio
 
 ## 3. Pattern di Iniezione del Contesto negli LLM
 
-Per azzerare la deriva stocastica e l'inflazione del context window, il vettore di stato LINGHOS compilato viene iniettato nel system prompt dell'LLM tramite uno schema rigido. Il modello viene istruito per agire strettamente come un kernel di esecuzione operativo, eliminando qualsiasi deviazione conversazionale o terapeutica.
+Questa sezione mostra un possibile schema d'integrazione a valle. Il repository produce l'output del compilatore e include un harness illustrativo per costruire un prompt, ma non distribuisce un client API LLM né esegue chiamate a modelli esterni. Le istruzioni nel prompt non possono garantire risposte del modello deterministiche o prive di allucinazioni.
 
 ### 3.1 Metriche di Ottimizzazione dei Token
 
-| Metrica | Sfogo Grezzo in Linguaggio Naturale | Vettore di Stato Compilato LINGHOS | Miglioramento |
+| Metrica | Input grezzo in linguaggio naturale | Stato LINGHOS serializzato | Stato delle evidenze |
 | :--- | :--- | :--- | :--- |
-| **Conteggio Token di Input** | 1.480 token | 114 token | **Riduzione del 92,3%** |
-| **Deriva Semantica / Tasso di Allucinazione** | Varianza del 18,4% tra esecuzioni | 0,0% (schema di output deterministico) | **Eliminazione al 100%** |
-| **Consumo del Context Window** | Elevato (memoria conversazionale circolare) | Trascurabile (vettore JSON compatto) | **Massima Efficienza** |
-| **Latenza di Esecuzione** | 2.850 ms (ragionamento su rumore ambiguo) | 410 ms (dispatch diretto delle azioni) | **Accelerazione dell'85,6%** |
+| **Conteggio token** | Dipende dal campione e dal tokenizer | Dipende dai campi estratti e dalla sintassi | **Non misurato in questo repository** |
+| **Deriva semantica** | Dipende da modello, prompt e contesto | Il parsing del compilatore è basato su regole per il sottoinsieme implementato | **Nessuno studio comparativo sul tasso di allucinazione** |
+| **Impronta del contesto** | Dipende dalla lunghezza dell'input | Può essere inferiore per uno stato compatto e pre-strutturato | **Nessuna percentuale di riduzione garantita** |
+| **Latenza end-to-end** | Include latenza del modello e della rete | Il compilatore misura il tempo locale; il dispatch LLM non è incluso | **Nessun benchmark di latenza comparabile** |
 
-### 3.2 Harness di Iniezione Python per Ambienti di Produzione
+Per pubblicare valori numerici servono un corpus riproducibile, versioni del tokenizer/modello, script di misurazione, numero di esecuzioni e risultati grezzi. Una rappresentazione deterministica del compilatore non rende deterministica l'uscita probabilistica di un LLM.
 
-La seguente implementazione Python completa e autonoma carica gli input grezzi, sintetizza i vettori LINGHOS e costruisce il payload ottimizzato per il modello linguistico:
+### 3.2 Harness Illustrativo di Integrazione Python
+
+Il seguente esempio Python autonomo mostra uno schema euristico d'integrazione. Non è un processore NLP o biometrico validato e il codice generato include primitivi descritti dalla specifica che il runtime attuale non implementa:
 
 ```python
 """
