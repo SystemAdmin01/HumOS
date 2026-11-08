@@ -64,16 +64,16 @@ The **G.A.P.** protocol (GAP-001, **Active Paranoia Management**) defines the pr
 
 ### 3.2 Proposed Hard-Stop Behavior — `TRIGGER.kill_switch()`
 The architectural target is to request an immediate abort (`TRIGGER.kill_switch()`) under the following critical conditions. This primitive is not implemented by the current runtime:
-- **Corrupted State Vector:** The AST contains syntactically invalid nodes or contradictory invariants (e.g., `CS_SECURE` asserted while `core_connected == True` on a lockdown target).
+- **Corrupted State Vector:** A future parser/validation layer detects malformed source or contradictory modeled state (e.g., `CS_SECURE` asserted while `core_connected == True` on a lockdown target).
 - **Injection Signature Detected:** An input variable contains active exploit syntax targeting downstream LLM tokenizers.
 - **Biometric Saturation Threshold:** Autonomic heart rate breaches $130\text{ BPM}$ or working memory load reaches $95\%$.
 
-#### Invariant Abort Guarantees:
-When `TRIGGER.kill_switch()` fires:
-1. All communication bridges are severed: `Close(all) > bridges`.
-2. Target fidelity is zeroed: `Fidelity = 0%`.
-3. Emotional detachment is absolute: `Take_DOWN(all) > Core`.
-4. Overrides are enforced: `OVR >> (DDS, ADS)`.
+#### Proposed response sequence if implemented:
+If a future runtime implements and activates `TRIGGER.kill_switch()`, the intended sequence is:
+1. The runtime would close the modeled communication bridges: `Close(all) > bridges`.
+2. The modeled target fidelity would be set to zero: `Fidelity = 0%`.
+3. The modeled core connection would be cleared: `Take_DOWN(all) > Core`.
+4. The modeled defense overrides would be applied: `OVR >> (DDS, ADS)`.
 5. The modeled host state enters zero-fidelity cold standby until manual operator authentication.
 
 ---
