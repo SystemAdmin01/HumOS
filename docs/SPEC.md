@@ -21,6 +21,18 @@ LINGHOS functions as an abstraction barrier between biological neuro-chemistry a
 
 ---
 
+### 1.3 Implementation Status and Conformance Boundary
+
+This document is the **architectural target specification**, not a claim that every primitive below is implemented by the current Python runtime. The package version (`1.0.0`) and this specification revision (`2.1.0-REV4`) are independent version lines.
+
+**Implemented in the current repository:** line-oriented parsing/compilation for the supported subset (`#include`, `Get:`, `Set_CriticVal`, `@Start>`, `Call >>`, lockdown/attack directives, `Take_DOWN`, `Close`, `OVR`, `BE`, `IF`, `Echo`, and `<<@end`); in-memory target and VM *models*; a subset of skill state transitions; compiler diagnostics and modeled telemetry; CLI and local Cockpit.
+
+**Design-level / not yet enforced as runtime primitives:** `RAM.alloc()`, `RAM.free()`, `RAM.purge()`, `THREAD.*`, `BREAK_LOOP()`, `SET_VALUE()`, `TRIGGER.kill_switch()`, a G.A.P. watchdog with a real timeout, operating-system VM/process isolation, hardware biometric acquisition, and automatic raw-language-to-state demodulation. The VM objects are application data models, not operating-system virtual machines. The package does not itself call an external LLM; integration snippets that construct prompts are examples for downstream applications.
+
+The compiler and serializer are deterministic for a given input and runtime state where implemented. This does **not** guarantee deterministic or hallucination-free behavior from an external LLM. Treat all unimplemented primitives in the following reference as proposed semantics until their runtime implementation and tests are added.
+
+---
+
 ## 2. Processing Pipeline Mechanics
 
 The HumOS runtime processes cognitive inputs across a deterministic 4-stage pipeline. Every transformation step adheres to an explicit structural contract.
