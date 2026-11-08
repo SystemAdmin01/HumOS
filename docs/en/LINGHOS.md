@@ -1,4 +1,4 @@
-# LINGHOS (LINGuistic Human Operating System)
+# LINGHOS — Language for Interfacing Neurodivergent Gestalt Human Operating Systems
 ### Official Specification of the Cognitive Command Language for Neurodivergent and Hyper-Logical Minds
 
 > *"You can write four pages like an emotional diary without ever understanding what makes you feel bad. LINGHOS describes in four lines dynamics that are hard to explain in words, showing you the exact steps to the solution."* — **OD, System Architect**
