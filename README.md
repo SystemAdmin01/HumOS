@@ -183,7 +183,8 @@ HumOS/
 │       ├── syntax.py       # Shared normalization and block scanning
 │       ├── kernel.py       # Cognitive runtime state model
 │       └── cockpit.html    # HumOS Cockpit GUI
-├── tests/                  # Parser/compiler regression tests
+├── tests/                  # Parser/compiler and example smoke tests
+├── .github/workflows/ci.yml # Python matrix tests and package build
 ├── updates/                # Release notes and patches
 ├── CONTRIBUTING.md
 ├── LICENSE.txt
