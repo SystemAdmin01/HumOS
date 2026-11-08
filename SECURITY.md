@@ -51,18 +51,18 @@ flowchart TD
 
 ---
 
-## 3. Sandbox Isolation Invariants (`G.A.P.` Architecture)
+## 3. Sandbox Isolation Invariants — G.A.P. Design Targets
 
 > **Implementation boundary (package 1.0.0):** This policy describes intended controls and the threat model; it is not a security certification. The current runtime models target/VM state but does not provide operating-system VM isolation, a G.A.P. loop watchdog, or the documented `TRIGGER.kill_switch()` primitive. The Cockpit server binds to loopback, rejects cross-origin browser POST requests, and caps JSON request bodies at 1 MiB. It does not authenticate local users or processes. Do not expose it through a public interface, reverse proxy, or tunnel.
 
-The **G.A.P.** (**Guard, Analyze, Patch**) subsystem defines the project's intended containment and response model. Runtime enforcement is partial; see the implementation boundary below.
+The **G.A.P.** protocol (GAP-001, **Active Paranoia Management**) defines the project's intended containment and response model. Runtime enforcement is partial; see the implementation boundary below.
 
-### 3.1 Hard Memory Boundary Enforcement
-1. **Zero Unshielded Exposure:** When `CS_EXPOSED` is evaluated, the Core Vault immediately engages `Ice_shield` (thermal decoupling) and `Double_Bottom_Shield` (semantic firewall). No raw data can reach the Core without passing through the semantic filter.
+### 3.1 Intended Containment Targets (Not Runtime Guarantees)
+1. **Protected-State Boundary:** The design target is to engage `Ice_shield` and `Double_Bottom_Shield` when `CS_EXPOSED` is detected. The current runtime models selected shield states; it does not enforce a non-bypassable semantic firewall.
 2. **Strict VM Quarantine:** Any target declared with threat score $\ge 7.0$ is forced into `HP_EXT_Defense_VM`. It cannot access shared working memory segments or ambient threads.
-3. **Loop Interrupt Guarantee:** If an associative cycle exceeds the declared tick limit (`TIMEOUT = [30]`), `G.A.P.` executes a hard `BREAK_LOOP(X)` and forces `SET_VALUE(X, UNDEFINED)`. Speculative processing is permanently prohibited.
+3. **Loop Interruption:** The protocol specifies a proposed timeout and `BREAK_LOOP(X)` response. The current runtime does not ship a G.A.P. watchdog, `BREAK_LOOP()`, or `SET_VALUE()` primitive.
 
-### 3.2 Mandatory Execution Abort via `TRIGGER.kill_switch()`
+### 3.2 Proposed Hard-Stop Behavior — `TRIGGER.kill_switch()`
 The architectural target is to request an immediate abort (`TRIGGER.kill_switch()`) under the following critical conditions. This primitive is not implemented by the current runtime:
 - **Corrupted State Vector:** The AST contains syntactically invalid nodes or contradictory invariants (e.g., `CS_SECURE` asserted while `core_connected == True` on a lockdown target).
 - **Injection Signature Detected:** An input variable contains active exploit syntax targeting downstream LLM tokenizers.
@@ -74,7 +74,7 @@ When `TRIGGER.kill_switch()` fires:
 2. Target fidelity is zeroed: `Fidelity = 0%`.
 3. Emotional detachment is absolute: `Take_DOWN(all) > Core`.
 4. Overrides are enforced: `OVR >> (DDS, ADS)`.
-5. The host enters zero-fidelity cold standby until manual operator authentication.
+5. The modeled host state enters zero-fidelity cold standby until manual operator authentication.
 
 ---
 
