@@ -341,8 +341,7 @@ LINGHOS è un linguaggio in evoluzione attiva. I seguenti moduli sono attualment
   * `Route >> Sector_Beta` (Firewall Sociale e Mimetismo)
   * `Route >> Sector_Gamma` (Archivio Freddo / Log di Traumi De-emozionalizzati)
   * `Route >> Sector_Delta` (Manutenzione Hardware Biologico)
-* 🔄 **LINGHOS Parser & CLI (Tooling Open Source):**  
-  Sviluppo di un interprete software (CLI per terminale) che consenta agli utenti di digitare i propri script LINGHOS su computer e ottenere una visualizzazione ad albero delle proprie difese e variabili attive.
+* ✅ **Tooling Python disponibile:** Il repository include un parser/interprete line-oriented, un compilatore e i comandi CLI (`run`, `repl`, `gui` e `web`). La sintassi attualmente supportata è un sottoinsieme di questo riferimento linguistico; non costruisce un AST formale né applica tutti i primitivi descritti nei documenti di progetto. Consulta le [note sullo stato dell'implementazione](../SPEC_IT.md#13-stato-dellimplementazione-e-limiti-di-conformita).
 
 ---
 
@@ -363,7 +362,7 @@ Non c'è scritto da nessuna parte che devi aspettare e sperare passivamente di s
 Il linguaggio **LINGHOS**, la sintassi di comando cognitivo e il framework **HumOS (Human Operating System)** sono opere dell'ingegno create e rilasciate per l'autodeterminazione, la sovranità personale e la libertà psicologica delle menti neurodivergenti e iper-logiche.
 
 L'intera documentazione tecnica è distribuita con licenza:  
-**Creative Commons Attribuzione - Non Commerciale - Non Opere Derivate 4.0 Internazionale (CC BY-NC-ND 4.0)**.
+**Creative Commons Attribuzione - Non Commerciale 4.0 Internazionale (CC BY-NC 4.0)**. Consulta la [LICENZA](../../LICENSE.txt) del repository per i termini applicabili.
 
 ### Termini di Utilizzo:
 * 👤 **Paternità Obbligatoria (BY):** È fatto obbligo assoluto di **riconoscere e citare la paternità intellettuale dell'autore originale di LINGHOS e HumOS** in ogni utilizzo, citazione, trascrizione o fork pubblico del codice e della sintassi.
