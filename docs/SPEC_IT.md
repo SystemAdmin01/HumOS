@@ -21,6 +21,18 @@ LINGHOS agisce come una barriera di astrazione tra la neurochimica biologica e l
 
 ---
 
+### 1.3 Stato dell'Implementazione e Limiti di Conformità
+
+Questo documento è una **specifica architetturale di riferimento**, non la dichiarazione che ogni primitivo descritto sia già implementato nel runtime Python. La versione del package (`1.0.0`) e la revisione della specifica (`2.1.0-REV4`) appartengono a due linee di versione distinte.
+
+**Implementato nel repository attuale:** parsing/compilazione lineare del sottoinsieme supportato (`#include`, `Get:`, `Set_CriticVal`, `@Start>`, `Call >>`, direttive lockdown/attack, `Take_DOWN`, `Close`, `OVR`, `BE`, `IF`, `Echo` e `<<@end`); *modelli in memoria* per target e VM; un sottoinsieme di transizioni di stato delle skill; diagnostica del compilatore e telemetria modellata; CLI e Cockpit locale.
+
+**A livello di specifica / non ancora applicato come primitivo runtime:** `RAM.alloc()`, `RAM.free()`, `RAM.purge()`, `THREAD.*`, `BREAK_LOOP()`, `SET_VALUE()`, `TRIGGER.kill_switch()`, un watchdog G.A.P. con timeout effettivo, isolamento di processi/VM a livello di sistema operativo, acquisizione biometrica hardware e demodulazione automatica da linguaggio naturale a vettore di stato. Gli oggetti VM sono modelli applicativi, non macchine virtuali del sistema operativo. Il package non invoca direttamente un LLM esterno; gli esempi di generazione dei prompt sono integrazioni illustrative per applicazioni a valle.
+
+Il compilatore e il serializzatore sono deterministici per uno stesso input e stato runtime, nei percorsi implementati. Questo **non** garantisce risposte deterministiche o prive di allucinazioni da parte di un LLM esterno. I primitivi non implementati descritti nelle sezioni successive vanno considerati semantica proposta fino all'aggiunta del runtime e dei relativi test.
+
+---
+
 ## 2. Meccanica della Pipeline di Elaborazione
 
 Il runtime di HumOS elabora gli input cognitivi attraverso una pipeline deterministica a 4 stadi. Ogni passaggio di trasformazione rispetta un contratto strutturale esplicito.
