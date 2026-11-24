@@ -33,7 +33,6 @@ class CockpitHTTPSecurityTests(unittest.TestCase):
         status, _, payload = self.request(
             "POST",
             "/api/compile",
-            body=json.dumps({"code": "Main() {}"}),
             headers={
                 "Content-Type": "application/json",
                 "Origin": "https://attacker.example",

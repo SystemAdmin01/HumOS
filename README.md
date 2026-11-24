@@ -11,7 +11,7 @@
 [![Languages: EN | IT](https://img.shields.io/badge/Languages-EN%20%7C%20IT-555555)](#documentation)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-blue.svg)](LICENSE.txt)
 
-[English documentation](docs/GUIDE.md) · [Documentazione italiana](docs/GUIDE_IT.md) · [HumOS Cockpit](src/linghos/cockpit.html) · [Examples](examples/)
+[English documentation](docs/GUIDE.md) · [Documentazione italiana](docs/GUIDE_IT.md) · [HumOS Cockpit](src/linghos/cockpit.html) · [Examples](examples/) · [Updates and changelog](updates/README.md)
 
 ---
 
@@ -152,6 +152,7 @@ Prebuilt macOS packages, when published, are available from [GitHub Releases](ht
 | **Language Spec** | [`docs/SPEC.md`](docs/SPEC.md) | [`docs/SPEC_IT.md`](docs/SPEC_IT.md) | Formal syntax, primitives, and implementation boundaries |
 | **Developer Guide** | [`docs/GUIDE.md`](docs/GUIDE.md) | [`docs/GUIDE_IT.md`](docs/GUIDE_IT.md) | Pipeline walkthrough, runtime concepts, and prompt-injection considerations |
 | **Code Examples** | [`examples/`](examples/) | [`examples/`](examples/) | LINGHOS scripts and Python integration examples |
+| **Updates / Changelog** | [`updates/CHANGELOG.md`](updates/CHANGELOG.md) | [`updates/CHANGELOG.md`](updates/CHANGELOG.md) | Version history, feature updates, and historical source notes |
 | **Contribution** | [`CONTRIBUTING.md`](CONTRIBUTING.md) | [`docs/CONTRIBUTING_IT.md`](docs/CONTRIBUTING_IT.md) | Pull-request verification and contribution conventions |
 | **Security Protocol** | [`SECURITY.md`](SECURITY.md) | [`docs/SECURITY_IT.md`](docs/SECURITY_IT.md) | Vulnerability disclosure, threat model, and G.A.P. limits |
 
