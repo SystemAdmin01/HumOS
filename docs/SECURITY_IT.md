@@ -1,8 +1,8 @@
 # Politica di Sicurezza Cognitiva per HumOS & LINGHOS
 **Identificatore Documento:** `SEC-POLICY-20261108-IT`  
-**Stato dello Standard:** `Standard di Sicurezza in Produzione & Protocollo di Divulgazione delle Vulnerabilità`  
+**Stato dello Standard:** `Politica di Sicurezza del Progetto & Guida alla Divulgazione delle Vulnerabilità`  
 **Classificazione:** `Architettura di Sicurezza Runtime & Modello delle Minacce`  
-**Responsabile Sicurezza:** `SystemAdmin01` (`security@humos.local`)  
+**Contatto Sicurezza:** [SystemAdmin01 su GitHub](https://github.com/SystemAdmin01)  
 
 ---
 
@@ -51,36 +51,38 @@ flowchart TD
 
 ---
 
-## 3. Invarianti di Isolamento delle Sandbox (Architettura G.A.P.)
+## 3. Invarianti di Isolamento delle Sandbox — Obiettivi di Progetto G.A.P.
 
-Il sottosistema **G.A.P.** (**Guard, Analyze, Patch**) fornisce garanzie d'isolamento a runtime non aggirabili.
+> **Limiti dell'implementazione (package 1.0.0):** Questa politica descrive i controlli previsti e il modello delle minacce; non costituisce una certificazione di sicurezza. Il runtime attuale modella lo stato di target e VM, ma non fornisce isolamento VM a livello di sistema operativo, un watchdog G.A.P. per i loop o il primitivo documentato `TRIGGER.kill_switch()`. Il server Cockpit si lega al loopback, rifiuta le richieste POST browser cross-origin e limita i body JSON a 1 MiB. Non autentica utenti o processi locali. Non esporlo tramite interfacce pubbliche, reverse proxy o tunnel.
 
-### 3.1 Applicazione Rigorosa dei Confini di Memoria
-1. **Esposizione Zero Senza Scudo:** Quando viene rilevata la condizione `CS_EXPOSED`, il Core Vault attiva immediatamente `Ice_shield` (disaccoppiamento termico) e `Double_Bottom_Shield` (firewall semantico). Nessun dato grezzo può raggiungere il Core senza transitare attraverso il filtro semantico.
+Il protocollo **G.A.P.** (GAP-001, **Gestione Attiva delle Paranoie**) definisce il modello di contenimento e risposta previsto dal progetto. L'applicazione nel runtime è parziale; consulta i limiti d'implementazione qui sotto.
+
+### 3.1 Obiettivi di Contenimento (Non Garanzie del Runtime)
+1. **Confine dello Stato Protetto:** L'obiettivo progettuale è attivare `Ice_shield` e `Double_Bottom_Shield` quando viene rilevato `CS_EXPOSED`. Il runtime attuale modella alcuni stati degli scudi, ma non applica un firewall semantico non aggirabile.
 2. **Quarantena Rigida in VM:** Qualsiasi target dichiarato con punteggio di minaccia $\ge 7.0$ viene forzato all'interno di `HP_EXT_Defense_VM`. Gli è precluso qualsiasi accesso a segmenti di memoria di lavoro condivisa o thread ambientali.
-3. **Garanzia di Interruzione del Loop:** Se un ciclo associativo supera il limite di tick dichiarato (`TIMEOUT = [30]`), `G.A.P.` esegue un hard `BREAK_LOOP(X)` forzando lo stato `SET_VALUE(X, UNDEFINED)`. Qualsiasi elaborazione speculativa viene interrotta definitivamente.
+3. **Interruzione dei Loop:** Il protocollo specifica un timeout proposto e la risposta `BREAK_LOOP(X)`. Il runtime attuale non distribuisce un watchdog G.A.P. né i primitivi `BREAK_LOOP()` e `SET_VALUE()`.
 
-### 3.2 Aborto Obbligatorio dell'Esecuzione tramite `TRIGGER.kill_switch()`
-Il runtime impone un'interruzione immediata e non intercettabile (`TRIGGER.kill_switch()`) al verificarsi di una qualsiasi delle seguenti condizioni critiche di sicurezza:
-- **Vettore di Stato Corrotto:** L'AST contiene nodi sintatticamente non validi o invarianti contraddittori (es. asserzione di `CS_SECURE` mentre `core_connected == True` su un target in lockdown).
+### 3.2 Comportamento di Hard-Stop Proposto — `TRIGGER.kill_switch()`
+L'obiettivo architetturale è richiedere un'interruzione immediata (`TRIGGER.kill_switch()`) al verificarsi delle seguenti condizioni critiche. Questo primitivo non è implementato dal runtime attuale:
+- **Vettore di Stato Corrotto:** Un futuro livello di parsing/validazione rileva sorgente malformata o stato modellato contraddittorio (es. asserzione di `CS_SECURE` mentre `core_connected == True` su un target in lockdown).
 - **Firma di Iniezione Rilevata:** Una variabile di input contiene sintassi di exploit attiva mirata ai tokenizer degli LLM a valle.
 - **Soglia di Saturazione Biometrica:** Il battito cardiaco autonomo supera $130\text{ BPM}$ o il carico della memoria di lavoro tocca il $95\%$.
 
-#### Garanzie dell'Aborto Invariante:
-All'attivazione di `TRIGGER.kill_switch()`:
-1. Tutti i canali di comunicazione vengono troncati: `Close(all) > bridges`.
-2. La fedeltà verso i target viene azzerata: `Fidelity = 0%`.
-3. Il distacco emotivo è assoluto: `Take_DOWN(all) > Core`.
-4. Gli override vengono imposti: `OVR >> (DDS, ADS)`.
-5. L'host entra in cold standby a fedeltà zero fino all'autenticazione manuale dell'operatore.
+#### Sequenza di risposta proposta, se implementata:
+Se un futuro runtime implementerà e attiverà `TRIGGER.kill_switch()`, la sequenza prevista sarà:
+1. I ponti di comunicazione modellati verrebbero chiusi: `Close(all) > bridges`.
+2. La fedeltà modellata del target verrebbe impostata a zero: `Fidelity = 0%`.
+3. La connessione modellata al Core verrebbe rimossa: `Take_DOWN(all) > Core`.
+4. Gli override difensivi modellati verrebbero applicati: `OVR >> (DDS, ADS)`.
+5. Lo stato modellato dell'host entra in cold standby a fedeltà zero fino all'autenticazione manuale dell'operatore.
 
 ---
 
-## 4. Matrice di Gravità delle Minacce & Tempi di Risoluzione SLA
+## 4. Matrice di Gravità delle Minacce & Finestre Obiettivo di Risoluzione
 
 Le vulnerabilità segnalate al Security Team di HumOS vengono classificate secondo il modello **Cognitive Security Vulnerability Scoring (CSVS)**:
 
-| Livello di Gravità | Definizione della Minaccia | Impatto Operativo | SLA di Risoluzione |
+| Livello di Gravità | Definizione della Minaccia | Impatto Operativo | Finestra Obiettivo di Risoluzione* |
 | :--- | :--- | :--- | :--- |
 | **CRITICA** | Violazione diretta del Core Vault (`CS_UNLOCKED`); loop ricorsivo inarrestabile con blocco cognitivo totale; prompt injection che causa esecuzione di tool esterni non autorizzati. | Perdita totale dei confini cognitivi; grave disregolazione emotiva; dispatch arbitrario dell'LLM. | **Risoluzione entro 24 Ore** |
 | **ALTA** | Mancato isolamento di un target ad alta minaccia ($C \ge 8$) nella sandbox `G.A.P.`; perdita di memoria in `RAM.alloc()` con progressivo esaurimento delle risorse; mancato contenimento del thermal throttling da parte di `Ice_shield`. | Saturazione della memoria di lavoro ($>85\%$); fuoriuscita di stimoli ansiogeni acuti; perdita del focus operativo. | **Risoluzione entro 72 Ore** |
@@ -91,20 +93,22 @@ Le vulnerabilità segnalate al Security Team di HumOS vengono classificate secon
 
 ## 5. Protocollo di Divulgazione & Segnalazione Responsabile
 
-Adottiamo una procedura di divulgazione strutturata e responsabile. **Non** divulgare vulnerabilità cognitive pubblicamente sui tracker di issue o sui social network prima della pubblicazione della relativa patch.
+Adottiamo una procedura di divulgazione strutturata e responsabile. **Non** divulgare vulnerabilità pubblicamente prima di aver coordinato la segnalazione con il maintainer. I tempi di risposta non sono attualmente garantiti da uno SLA formale.
 
 ### 5.1 Fasi di Segnalazione
-1. **Invio della Segnalazione:** Cripta il report di vulnerabilità e invialo a `security@humos.local` (oppure tramite la funzione GitHub Private Vulnerability Reporting su `https://github.com/SystemAdmin01/HumOS/security/advisories`).
+1. **Invio della Segnalazione:** Utilizza [GitHub Private Vulnerability Reporting](https://github.com/SystemAdmin01/HumOS/security/advisories) se è abilitato per il repository. In caso contrario, contatta il maintainer tramite il [profilo GitHub](https://github.com/SystemAdmin01). Non inviare report all'indirizzo segnaposto `security@humos.local`.
 2. **Formato del Payload Richiesto:**
    - Descrizione dettagliata del vettore di vulnerabilità cognitiva.
    - Minimal Reproducible Example (MRE) scritto in sintassi `.lghos` che dimostri l'exploit.
    - Flusso di input grezzo che bypassa la demodulazione o innesca la ricorsione incontrollata.
    - Stato telemetrico osservato rispetto al comportamento invariante atteso.
-3. **Presa in Carico & Conferma:** Il team di sicurezza conferma la ricezione entro **12 ore** e fornisce una valutazione iniziale di gravità entro **24 ore**.
-4. **Periodo di Embargo:** Si applica un embargo standard di **30 giorni** dalla data di conferma della presa in carico, durante il quale la patch viene sviluppata e verificata tramite suite di test unitari.
+3. **Presa in Carico & Conferma:** Il maintainer prenderà in carico e valuterà le segnalazioni in base alla propria disponibilità; non sono garantiti tempi di conferma o risoluzione.
+4. **Periodo di Embargo:** Concorda le tempistiche di divulgazione con il maintainer; non presumere l'esistenza di un periodo fisso di embargo.
 5. **Bollettino Pubblico & Riconoscimenti:** Al rilascio della patch, viene pubblicato un bollettino ufficiale di sicurezza (`SEC-ADV-YYYYMMDD-XX`), con attribuzione del merito al ricercatore.
 
 ---
 
-*Redatto e verificato sotto il Gruppo di Specifica HumOS.*  
+**Le finestre indicate sono obiettivi di pianificazione, non SLA contrattuali né tempi di risposta garantiti.*
+
+*Gestito da SystemAdmin01.*  
 *Repository Ufficiale:* [https://github.com/SystemAdmin01/HumOS](https://github.com/SystemAdmin01/HumOS)

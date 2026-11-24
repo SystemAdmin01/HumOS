@@ -12,18 +12,28 @@
 LINGHOS (**Language for Interfacing Neurodivergent Gestalt Human Operating Systems**) è una **Sintassi Cognitiva Personale Rigorosa**. Si tratta di un Domain-Specific Language (DSL) deterministico ad alta efficienza, progettato specificamente dall'autore per mappare stati interni neurodivergenti e instabili (iper-attivazione da ADHD, sovraccarico cognitivo, disregolazione emotiva e cascate di loop associativi) in vettori di stato discreti e verificabili.
 
 ### 1.2 Obiettivo Primario & Meccanica Operativa
-L'espressione emotiva non strutturata e il journaling soggettivo tradizionale generano una perdita di segnale critica quando interfacciati con sistemi computazionali e Large Language Model (LLM):
-- **Inflazione dei Token:** Lo sfogo emotivo non strutturato satura il context window con token ridondanti e ciclici.
-- **Ambiguità Semantica:** La prosa soggettiva introduce deviazioni stocastiche e allucinazioni nei motori di inferenza LLM a valle.
-- **Latenza & Thermal Throttling:** I loop di feedback mentali non strutturati consumano la memoria di lavoro (RAM cognitiva) senza mai convergere verso una soluzione.
 
-LINGHOS agisce come una barriera di astrazione tra la neurochimica biologica e l'esecuzione cognitiva deterministica. Imponendo token lessicali rigorosi, dichiarazioni di confine perimetrale (`Sandbox`), e un bilancio termodinamico delle risorse (`RAM`, `BPM`, `Stato CS`), LINGHOS estrae il segnale utile eliminando il rumore emotivo. I vettori di stato risultanti consentono un parsing semantico privo di allucinazioni, un tracciamento verificabile delle transizioni di stato e l'esecuzione deterministica delle istruzioni.
+Gli input cognitivi non strutturati possono essere difficili da ispezionare e riutilizzare nei workflow computazionali. Ripetizioni, contesto mancante e riferimenti ambigui possono aumentare la dimensione dei prompt o rendere meno prevedibile l'interpretazione a valle. Sono motivazioni progettuali di HumOS, non affermazioni misurate su tutti i prompt in linguaggio naturale o su tutti gli LLM.
+
+LINGHOS è progettato per fornire un livello di rappresentazione esplicito: l'utente può nominare target, assegnare attributi modellati e descrivere azioni supportate tramite un DSL compatto. Questo può rendere lo stato risultante più facile da ispezionare e trasferire a un'altra applicazione. Il package attuale non estrae automaticamente tale stato dal testo libero e un input strutturato non garantisce l'assenza di allucinazioni o un comportamento deterministico da parte di un LLM esterno.
+
+---
+
+### 1.3 Stato dell'Implementazione e Limiti di Conformità
+
+Questo documento è una **specifica architetturale di riferimento**, non la dichiarazione che ogni primitivo descritto sia già implementato nel runtime Python. La versione del package (`1.0.0`) e la revisione della specifica (`2.1.0-REV4`) appartengono a due linee di versione distinte.
+
+**Implementato nel repository attuale:** parsing/compilazione lineare del sottoinsieme supportato (`#include`, `Get:`, `Set_CriticVal`, `@Start>`, `Call >>`, direttive lockdown/attack, `Take_DOWN`, `Close`, `OVR`, `BE`, `IF`, `Echo` e `<<@end`); *modelli in memoria* per target e VM; un sottoinsieme di transizioni di stato delle skill; diagnostica del compilatore e telemetria modellata; CLI e Cockpit locale.
+
+**A livello di specifica / non ancora applicato come primitivo runtime:** `RAM.alloc()`, `RAM.free()`, `RAM.purge()`, `THREAD.*`, `BREAK_LOOP()`, `SET_VALUE()`, `TRIGGER.kill_switch()`, un watchdog G.A.P. con timeout effettivo, isolamento di processi/VM a livello di sistema operativo, acquisizione biometrica hardware e demodulazione automatica da linguaggio naturale a vettore di stato. Gli oggetti VM sono modelli applicativi, non macchine virtuali del sistema operativo. Il package non invoca direttamente un LLM esterno; gli esempi di generazione dei prompt sono integrazioni illustrative per applicazioni a valle.
+
+A parità di sorgente e stato iniziale identico del runtime/registro, le decisioni grammaticali supportate e gli aggiornamenti di stato non dipendenti dal tempo seguono regole esplicite. I log con timestamp e il contenuto persistito del registro possono variare tra esecuzioni. Questo **non** garantisce risposte deterministiche o prive di allucinazioni da parte di un LLM esterno. I primitivi non implementati descritti nelle sezioni successive vanno considerati semantica proposta fino all'aggiunta del runtime e dei relativi test.
 
 ---
 
 ## 2. Meccanica della Pipeline di Elaborazione
 
-Il runtime di HumOS elabora gli input cognitivi attraverso una pipeline deterministica a 4 stadi. Ogni passaggio di trasformazione rispetta un contratto strutturale esplicito.
+Il diagramma seguente rappresenta l'architettura di riferimento prevista, non il percorso implementato nel package attuale. Per i componenti disponibili consulta la sezione 1.3.
 
 ```mermaid
 flowchart TD
@@ -37,19 +47,19 @@ flowchart TD
     end
 
     subgraph Stadio3["Stadio 3: Compilazione & Sintesi di Stato"]
-        COMP["Compilatore AST & Lexer LINGHOS<br/>(Validazione Simboli, Matrice Prossimità)"]
+        COMP["Compilatore LINGHOS / Serializzazione dello Stato<br/>(Architettura di Riferimento)"]
         STATE_CHECK{"Loop / Panico<br/>Rilevato?"}
         AST_GEN["Matrice Vettori Target<br/>+ Motore Telemetria Termodinamica"]
     end
 
     subgraph Stadio4["Stadio 4: Motore di Esecuzione"]
-        LLM["Backend di Esecuzione Deterministica<br/>(Interprete Semantico LLM / Dispatch Azioni)"]
+        LLM["Consumer LLM Esterno Opzionale<br/>(Inferenza Probabilistica / Azioni Applicative)"]
     end
 
     subgraph TrapRouting["Sottosistemi di Eccezione & Interrupt"]
-        GAP["Sottosistema Sandbox G.A.P.<br/>(Guard, Analyze, Patch)"]
-        KILL["Sottosistema di Aborto d'Emergenza<br/>(TRIGGER.kill_switch - Clamp Hardware)"]
-        CS_LOCK["Sigillo Core Vault a Fedeltà Zero<br/>[Forzatura CS_SECURE]"]
+        GAP["Protocollo G.A.P.-001<br/>(Gestione Attiva delle Paranoie)"]
+        KILL["Percorso Hard-Stop Proposto<br/>(Non Implementato nel Runtime Attuale)"]
+        CS_LOCK["Risposta Proposta dello Stato Core<br/>[Obiettivo Architetturale]"]
     end
 
     RAW --> FILT
@@ -303,14 +313,12 @@ flowchart TD
 
 ### 3.3 Livello Sicurezza & Intercettazione (Security & Interception Layer)
 
-#### 3.3.1 `G.A.P.` (Guard, Analyze, Patch)
+#### 3.3.1 `G.A.P.-001` (Active Paranoia Management / Gestione Attiva delle Paranoie)
 - **Specifica Sintattica:**
   ```linghos
   Call >> G.A.P.protocol;
-  // Espansione formale:
-  // Guard(X)   -> Intercetta la variabile caotica X
-  // Analyze(X) -> Rileva lo stato di loop in Assoc_Engine
-  // Patch(X)   -> BREAK_LOOP(X) + SET_VALUE(X, UNDEFINED) + Sandboxing
+  // Identità del protocollo: Active Paranoia Management / Gestione Attiva delle Paranoie.
+  // Le operazioni seguenti sono semantiche proposte, non primitive runtime implementate.
   ```
 - **Argomenti / Parametri:**
   - Contesto implicito o target esplicito: `X` (`Variabile Caotica / Payload di Minaccia`).
