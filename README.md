@@ -160,6 +160,10 @@ HumOS/
 │       └── cockpit.html        # Interactive visual frontend application
 │
 ├── updates/                    # Version changelogs and system patches
+│   ├── README.md               # Updates overview & release notes
+│   ├── V18.3.1.md              # HumOS Kernel V.18.3.1 specification & tools
+│   ├── GAP_2.0.md              # G.A.P. 2.0 active perception management (MD)
+│   ├── GAP_2.0.cpp             # G.A.P. 2.0 C++ reference implementation
 │   ├── Patch00-ITA.md
 │   └── Patch00-ENG.md
 │
@@ -169,10 +173,12 @@ HumOS/
 
 ---
 
-## 🩹 Standard Protocols Catalog
+## 🩹 Standard Protocols & Updates Catalog
 
-| Protocol ID | Classification | Objective | Implementation |
+| ID / Rel. | Classification | Objective | Implementation |
 | :--- | :--- | :--- | :--- |
+| **`V.18.3.1`** | Kernel Release | HumOS Kernel V.18.3.1, LINGHOS syntax, Gatekeeper, Planner & AI Protocol | [`updates/V18.3.1.md`](./updates/V18.3.1.md) |
+| **`GAP 2.0`** | Reality Check | G.A.P. 2.0: Active perception & evidence management (4-state epistemology) | [`updates/GAP_2.0.md`](./updates/GAP_2.0.md) / [`C++`](./updates/GAP_2.0.cpp) |
 | **`PATCH-00`** | System Lockdown | Safe Mode Offline: complete isolation & external input disconnect | [`updates/Patch00-ENG.md`](./updates/Patch00-ENG.md) |
 | **`GAP-001`** | Loop Interrupt | G.A.P. Protocol: Active paranoia management & unclassified loop brake | [`protocols/en/GAP-001-protocol.md`](./protocols/en/GAP-001-protocol.md) |
 
