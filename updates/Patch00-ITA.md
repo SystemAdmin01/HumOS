@@ -3,9 +3,11 @@
 
 > **Classificazione:** Patch di Architettura di Sistema HumOS
 > **Bug ID:** `STIM_APATHY_001` — Apatia da Stimolo / Risposta di Fuga Cognitiva
-> **Status:** `STABLE / DEPLOYED`
+> **Status:** `ARCHIVIATO / RIFERIMENTO PROGETTUALE — NON IMPLEMENTATO`
 > **Layer Target:** Software Layer (Gestione RAM) + Hardware Layer (Calibrazione Dopaminergica)
 > **Obiettivo:** Disconnessione mentale consapevole, rigenerazione delle risorse e riavvio pulito del sistema.
+
+> **Ambito e sicurezza:** questo è un modello proposto dall'autore per l'autogestione, espresso tramite metafore informatiche. Il repository non implementa questa patch come protocollo runtime applicato. Le spiegazioni biologiche, le soglie e gli effetti descritti non sono indicazioni o misurazioni mediche validate; non vanno considerati diagnosi o trattamento.
 
 [![HumOS](https://img.shields.io/badge/Sistema-HumOS_Core-00f0ff?style=flat-square)](#)
 [![Patch](https://img.shields.io/badge/Patch-00_SAFE__MODE__OFFLINE-ff0055?style=flat-square)](#)
@@ -502,11 +504,11 @@ Questo non è solo un gesto retorico. Il cambio nell'auto-attribuzione ha un cor
 ## 9. Note di Patch e Iterazioni Future
 
 ```
-[PATCH 00] — v1.0.0 — STABLE / DEPLOYED
+[PATCH 00] — proposta storica — NON IMPLEMENTATA
 ────────────────────────────────────────────────────────────
  Release iniziale. Protocollo core per il recupero dall'apatia da stimolo.
  Include: script LINGHOS, protocollo operativo in 5 fasi,
- validazione scientifica, logica della condizione di uscita.
+ motivazioni proposte, logica della condizione di uscita.
 
 [PIANIFICATO — v1.1.0]
 ────────────────────────────────────────────────────────────
@@ -546,10 +548,10 @@ Questo non è solo un gesto retorico. Il cambio nell'auto-attribuzione ha un cor
 ---
 
 *Parte dell'architettura [HumOS](../README.md) — Human Operating System*
-*[Specifica LINGHOS](../LINGHOS.md) | [Manuale di Architettura](../Main.md) | [Discussioni Community](../DISCUSSIONS.md)*
+*[Specifica LINGHOS](../docs/SPEC_IT.md) | [Guida per sviluppatori](../docs/GUIDE_IT.md) | [Issue e supporto](https://github.com/SystemAdmin01/HumOS/issues)*
 
 ---
 
 **© 2026 Diego / SystemAdmin01**
-*[Licenza MIT](../LICENSE) + [Creative Commons CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)*
+*[Licenza Creative Commons CC BY-NC 4.0](../LICENSE.txt)*
 *Libero da leggere, studiare e applicare su se stessi. Attribuzione obbligatoria. Uso commerciale severamente vietato.*

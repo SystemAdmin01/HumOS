@@ -5,6 +5,8 @@
 > HumOS is not a theory for changing yourself or others.
 > It is an emergency toolkit for when the external environment becomes unbearable chaos and you need to keep functioning.*
 
+> **Scope notice:** This is a historical, author-proposed conceptual manual, not a description of the current software runtime. It includes metaphors and claims about psychology or biology that are not established by this repository. Do not use it as clinical advice, diagnosis, treatment, or evidence that a feature is implemented. For the current software contract, use the [developer guide](../GUIDE.md) and [implementation specification](../SPEC.md).
+
 ---
 
 ## TABLE OF CONTENTS
@@ -575,14 +577,6 @@ You have the Root credentials.
 
 ---
 
-## 9. LICENSE AND AUTHORSHIP
+## 9. License and authorship
 
-The **HumOS (Human Operating System)** framework, the cognitive command language **LINGHOS**, the formalisation of the **DCICE Protocol**, the **Cybernetic Placebo**, and **Mental AIkido** are works of intellect conceived and developed for the sovereignty and autonomy of neurodivergent and hyper-logical minds.
-
-The entire technical documentation is released under the international licence:  
-**Creative Commons Attribution – NonCommercial – NoDerivatives 4.0 International (CC BY-NC-ND 4.0)**.
-
-### Binding Terms of Use and Distribution:
-1. **Mandatory Authorship Attribution (BY):** In every citation, summary, academic reference, digital mention, or partial or total transcription of the framework, the **authorship of the original author of HumOS and LINGHOS must ALWAYS be explicitly and clearly indicated**.
-2. **Strict Commercial Prohibition (NC):** It is **formally and strictly forbidden** to use HumOS, LINGHOS, or their related derivatives for profit purposes, direct or indirect monetisation, inclusion in paid video courses, commercial coaching programmes, or for-profit editorial publications without the author's express written agreement.
-3. **Systemic Integrity:** The work was born as an open architecture for the liberation of human potential and cannot be distorted for manipulative or speculative purposes.
+This manual is part of the HumOS repository and is governed by its [CC BY-NC 4.0 license](../../LICENSE.txt). The repository license file is the source of truth for permitted use and distribution.
