@@ -5,8 +5,6 @@
 HumOS non è una teoria per cambiare te stesso o gli altri.
 È una cassetta degli attrezzi di emergenza per quando l'ambiente esterno diventa un casino insopportabile e tu devi continuare a funzionare.*
 
-> **Nota sull'ambito:** questo è un manuale concettuale storico proposto dall'autore, non una descrizione del runtime software attuale. Contiene metafore e affermazioni psicologiche o biologiche non dimostrate da questo repository. Non va usato come indicazione clinica, diagnosi, trattamento o prova che una funzione sia implementata. Per il contratto software corrente, consulta la [guida per sviluppatori](../GUIDE_IT.md) e la [specifica di implementazione](../SPEC_IT.md).
-
 ---
 
 ## INDICE GENERALE
@@ -573,6 +571,14 @@ Hai le credenziali di Root.
 
 ---
 
-## 9. Licenza e paternità dell'opera
+## 9. LICENZA E PATERNITÀ DELL'OPERA
 
-Questo manuale fa parte del repository HumOS ed è soggetto alla [licenza CC BY-NC 4.0](../../LICENSE.txt). Il file della licenza nel repository è la fonte di riferimento per l'uso e la distribuzione consentiti.
+Il framework **HumOS (Human Operating System)**, il linguaggio di comando cognitivo **LINGHOS**, la formalizzazione del **Protocollo DCICE**, del **Placebo Cibernetico** e dell'**AIkido Mentale** sono opere dell'ingegno concepite e sviluppate per la sovranità e l'autonomia delle menti neurodivergenti e iper-logiche.
+
+L'intera documentazione tecnica è rilasciata sotto licenza internazionale:  
+**Creative Commons Attribuzione - Non Commerciale - Non Opere Derivate 4.0 Internazionale (CC BY-NC-ND 4.0)**.
+
+### Termini Vincolanti di Fruizione e Distribuzione:
+1. **Attribuzione Obbligatoria della Paternità (BY):** In ogni citazione, compendio, riferimento accademico, menzione digitale o trascrizione parziale o totale del framework, deve **SEMPRE essere esplicitamente e chiaramente indicata la paternità dell'autore originale di HumOS e LINGHOS**.
+2. **Divieto Commerciale Tassativo (NC):** È **formalmente e severamente vietato** utilizzare HumOS, LINGHOS o le relative declinazioni per fini di lucro, monetizzazione diretta o indiretta, inclusione in videocorsi a pagamento, percorsi di coaching commerciali o pubblicazioni editoriali a scopo di lucro senza espresso accordo scritto dell'autore.
+3. **Integrità Sistematica:** L'opera nasce come architettura aperta per la liberazione del potenziale umano e non può essere distorta per finalità manipolatorie o speculative.

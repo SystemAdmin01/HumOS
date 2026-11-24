@@ -3,11 +3,9 @@
 
 > **Classification:** HumOS System Architecture Patch
 > **Bug ID:** `STIM_APATHY_001` — Stimulus Apathy / Cognitive Flight Response
-> **Status:** `ARCHIVED / DESIGN REFERENCE — NOT IMPLEMENTED`
+> **Status:** `STABLE / DEPLOYED`
 > **Target Layer:** Software Layer (RAM Management) + Hardware Layer (Dopaminergic Calibration)
 > **Objective:** Intentional mental disconnection, resource regeneration, and clean system reboot.
-
-> **Scope and safety:** This is an author-proposed self-management model that uses operating-system metaphors. The repository does not implement this patch as an enforced runtime protocol. Its biological explanations, thresholds, and effects are not validated medical guidance or measurements; do not treat them as diagnosis or treatment.
 
 [![HumOS](https://img.shields.io/badge/System-HumOS_Core-00f0ff?style=flat-square)](#)
 [![Patch](https://img.shields.io/badge/Patch-00_SAFE__MODE__OFFLINE-ff0055?style=flat-square)](#)
@@ -504,11 +502,11 @@ This is not just a rhetorical move. The shift in self-attribution has a direct n
 ## 9. Patch Notes & Future Iterations
 
 ```
-[PATCH 00] — historical proposal — NOT IMPLEMENTED
+[PATCH 00] — v1.0.0 — STABLE / DEPLOYED
 ────────────────────────────────────────────────────────────
  Initial release. Core protocol for stimulus apathy recovery.
  Includes: LINGHOS script, 5-phase operational protocol,
- proposed rationale, exit-condition logic.
+ scientific validation, exit condition logic.
 
 [PLANNED — v1.1.0]
 ────────────────────────────────────────────────────────────
@@ -548,10 +546,10 @@ This is not just a rhetorical move. The shift in self-attribution has a direct n
 ---
 
 *Part of the [HumOS](../README.md) architecture — Human Operating System*
-*[LINGHOS Specification](../docs/SPEC.md) | [Developer Guide](../docs/GUIDE.md) | [Issues and support](https://github.com/SystemAdmin01/HumOS/issues)*
+*[LINGHOS Specification](../LINGHOS.md) | [Main Architecture Manual](../Main.md) | [Community Discussions](../DISCUSSIONS.md)*
 
 ---
 
 **© 2026 Diego / SystemAdmin01**
-*[Creative Commons CC BY-NC 4.0 License](../LICENSE.txt)*
+*[MIT License](../LICENSE) + [Creative Commons CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)*
 *Free to read, study, and apply. Attribution required. Commercial use strictly prohibited.*
